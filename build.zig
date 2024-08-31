@@ -31,7 +31,7 @@ pub fn setupExample(b: *std.Build, sdl3: *std.Build.Module, cfg: std.Build.TestO
         .name = name,
         .target = cfg.target,
         .optimize = cfg.optimize,
-        .root_source_file = std.Build.LazyPath.relative(try std.fmt.allocPrint(b.allocator, "examples/{s}/main.zig", .{name})),
+        .root_source_file = std.Build.LazyPath.relative(try std.fmt.allocPrint(b.allocator, "examples/{s}.zig", .{name})),
         .version = cfg.version,
     });
     exe.addModule("sdl3", sdl3);
@@ -52,8 +52,17 @@ pub fn runExample(b: *std.Build, sdl3: *std.Build.Module, cfg: std.Build.TestOpt
 
 pub fn setupExamples(b: *std.Build, sdl3: *std.Build.Module, cfg: std.Build.TestOptions) !*std.Build.Step {
     const exp = b.step("examples", "Build all examples");
-    // _ = dir;
-    _ = try setupExample(b, sdl3, cfg, "hello-world");
+    const examples_dir = std.Build.LazyPath{ .path = "examples" };
+    var dir = (try std.fs.openIterableDirAbsolute(examples_dir.getPath(b), .{}));
+    defer dir.close();
+    var dir_iterator = try dir.walk(b.allocator);
+    defer dir_iterator.deinit();
+    while (try dir_iterator.next()) |file| {
+        if (file.kind == .file and std.mem.endsWith(u8, file.basename, ".zig")) {
+            _ = try setupExample(b, sdl3, cfg, file.basename[0 .. file.basename.len - 4]);
+        }
+    }
+    exp.dependOn(b.getInstallStep());
     return exp;
 }
 

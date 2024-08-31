@@ -3,6 +3,9 @@ const Error = @import("error.zig").Error;
 const Window = @import("video.zig").Window;
 const std = @import("std");
 
+/// If you need any more than this then you are a psychopath.
+pub const MAX_BUTTONS = 16;
+
 /// Message box flags.
 pub const Flags = struct {
     const Self = @This();
@@ -91,16 +94,25 @@ pub const Data = struct {
     parent_window: ?Window,
     title: [:0]const u8,
     message: [:0]const u8,
-    buttons: []const Button,
+    /// Have buttons up to the first null entry. There is a max of MAX_BUTTONS.
+    buttons: *const [MAX_BUTTONS]?Button = &([_]?Button{null} ** MAX_BUTTONS),
     colors: ?Colors,
+
+    /// Format buttons in such a way that the struct will accept.
+    pub fn formatButtons(comptime buttons: []const ?Button) *const [MAX_BUTTONS]?Button {
+        return buttons ++ [_]?Button{null} ** (MAX_BUTTONS - buttons.len);
+    }
 };
 
 /// Show a message box with more advanced data.
-pub fn show(allocator: std.mem.Allocator, data: Data) !i32 {
-    var buttons = try allocator.alloc(C_SDL.SDL_MessageBoxButtonData, @intCast(data.buttons.len));
-    defer allocator.free(buttons);
+pub fn show(data: Data) !i32 {
+    var buttons: [MAX_BUTTONS]C_SDL.SDL_MessageBoxButtonData = undefined;
+    var button_cnt: c_int = 0;
     for (0..data.buttons.len) |ind| {
-        buttons[ind] = data.buttons[ind].toSDL();
+        if (data.buttons[ind]) |val| {
+            buttons[ind] = val.toSDL();
+            button_cnt += 1;
+        } else break;
     }
     var colors: C_SDL.SDL_MessageBoxColorScheme = undefined;
     if (data.colors) |val| {
@@ -111,8 +123,8 @@ pub fn show(allocator: std.mem.Allocator, data: Data) !i32 {
         .window = if (data.parent_window) |val| val.handle else null,
         .title = data.title,
         .message = data.message,
-        .numbuttons = @intCast(data.buttons.len),
-        .buttons = buttons.ptr,
+        .numbuttons = button_cnt,
+        .buttons = &buttons,
         .colorScheme = if (data.colors != null) &colors else null,
     };
     var button_id: c_int = undefined;

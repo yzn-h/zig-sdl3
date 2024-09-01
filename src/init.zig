@@ -1,5 +1,5 @@
 const C_SDL = @import("c_sdl.zig").C_SDL;
-const Error = @import("error.zig");
+const Error = @import("error.zig").Error;
 const std = @import("std");
 
 /// Used for initializing a subsystem.

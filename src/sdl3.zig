@@ -9,6 +9,7 @@ pub const init = @import("init.zig");
 pub const message_box = @import("message_box.zig");
 pub const misc = @import("misc.zig");
 pub const properties = @import("properties.zig");
+pub const rect = @import("rect.zig");
 pub const video = @import("video.zig");
 const std = @import("std");
 

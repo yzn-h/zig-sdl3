@@ -1,4 +1,11 @@
 const C_SDL = @import("c_sdl.zig").C_SDL;
+const Error = @import("error.zig").Error;
+const std = @import("std");
+
+// TODO: MACROS!!!
+
+/// Raw pixel value.
+pub const Pixel = u32;
 
 /// Pixel format type.
 pub const PackingType = enum(c_int) {
@@ -90,14 +97,59 @@ pub const Format = enum(c_int) {
         return C_SDL.SDL_PIXELFLAG(@intFromEnum(self)) > 0;
     }
 
+    /// Get a format for masks. Returns unknown if format is not possible.
+    pub fn forMasks(bpp: u32, r_mask: u32, g_mask: u32, b_mask: u32, a_mask: u32) void {
+        return C_SDL.SDL_GetPixelFormatForMasks(@intCast(bpp), r_mask, g_mask, b_mask, a_mask);
+    }
+
+    /// Convert a color to a raw pixel value in this format.
+    pub fn mapRgba(self: Self, palette: ?Palette, color: Color) !Pixel {
+        const format = C_SDL.SDL_GetPixelFormatDetails(@intFromEnum(self));
+        if (format == 0)
+            return error.SDLError;
+        return C_SDL.SDL_MapRGBA(format, if (palette) |val| val.handle else 0, color.r, color.g, color.b, color.a);
+    }
+
+    /// Get a mask for the format.
+    pub fn masks(self: Self) !struct { bpp: u32, r_mask: u32, g_mask: u32, b_mask: u32, a_mask: u32 } {
+        var ret: struct { bpp: u32, r_mask: u32, g_mask: u32, b_mask: u32, a_mask: u32 } = undefined;
+        var bpp: c_int = undefined;
+        if (!C_SDL.SDL_GetMasksForPixelFormat(@intFromEnum(self), &bpp, &ret.r_mask, &ret.g_mask, &ret.b_mask, &ret.a_mask))
+            return error.SDLError;
+        ret.bpp = @intCast(bpp);
+        return ret;
+    }
+
+    /// Get the name of the format. Null if format is not recognized.
+    pub fn name(self: Self) ?[]const u8 {
+        const ret = C_SDL.SDL_GetPixelFormatName(@intFromEnum(self));
+        if (std.mem.eql(u8, ret, "SDL_PIXELFORMAT_UNKNOWN"))
+            return null;
+        return std.mem.span(ret);
+    }
+
     /// Get how pixels are packed.
     pub fn packingType(self: Self) PackingType {
         return @enumFromInt(C_SDL.SDL_PIXELTYPE(@intFromEnum(self)));
+    }
+
+    /// Get a color from a pixel encoded in this format.
+    pub fn getRgba(self: Self, palette: ?Palette, pixel: Pixel) !Color {
+        const format = C_SDL.SDL_GetPixelFormatDetails(@intFromEnum(self));
+        if (format == 0)
+            return error.SDLError;
+        var r: u8 = undefined;
+        var g: u8 = undefined;
+        var b: u8 = undefined;
+        var a: u8 = undefined;
+        C_SDL.SDL_GetRGBA(pixel, format, if (palette) |val| val.handle else 0, &r, &g, &b, &a);
+        return .{ .r = r, .g = g, .b = b, .a = a };
     }
 };
 
 /// Pixel colorspace.
 pub const ColorSpace = enum(c_int) {
+    const Self = @This();
     Unknown = C_SDL.SDL_COLORSPACE_UNKNOWN,
     Srgb = C_SDL.SDL_COLORSPACE_SRGB,
     SrgbLinear = C_SDL.SDL_COLORSPACE_SRGB_LINEAR,
@@ -109,23 +161,23 @@ pub const ColorSpace = enum(c_int) {
     Bt709Full = C_SDL.SDL_COLORSPACE_BT709_FULL,
     Bt2020Limited = C_SDL.SDL_COLORSPACE_BT2020_LIMITED,
     Bt2020Full = C_SDL.SDL_COLORSPACE_BT2020_FULL,
+
+    /// Get the default colorspace for RGB.
+    pub fn rgbDefault() Self {
+        return @enumFromInt(C_SDL.SDL_COLORSPACE_RGB_DEFAULT);
+    }
+
+    /// Get the default colorspace for YUV.
+    pub fn yuvDefault() Self {
+        return @enumFromInt(C_SDL.SDL_COLORSPACE_YUV_DEFAULT);
+    }
 };
 
 /// An RGBA32 color.
-pub const Color = struct {
-    r: u8,
-    g: u8,
-    b: u8,
-    a: u8,
-};
+pub const Color = C_SDL.SDL_Color;
 
 /// An RGBA128 float color.
-pub const FColor = struct {
-    r: f32,
-    g: f32,
-    b: f32,
-    a: f32,
-};
+pub const FColor = C_SDL.SDL_FColor;
 
 /// Palette.
 pub const PaletteHandle = *C_SDL.SDL_Palette;
@@ -135,10 +187,27 @@ pub const Palette = struct {
     const Self = @This();
     handle: PaletteHandle,
 
+    /// Destroy the palette.
+    pub fn deinit(self: Self) void {
+        C_SDL.SDL_DestroyPalette(self.handle);
+    }
+
+    /// Create a new palette.
+    pub fn init(num_colors: usize) !Self {
+        const ret = C_SDL.SDL_CreatePalette(@intCast(num_colors));
+        if (ret == 0)
+            return error.SDLError;
+        return .{ .handle = ret };
+    }
+
+    /// Set palette colors starting at the first_color index.
+    pub fn setColors(self: Self, colors: []Color, first_color: usize) !void {
+        if (!C_SDL.SDL_SetPaletteColors(self.handle, colors.ptr, @intCast(first_color), @intCast(colors.len)))
+            return error.SDLError;
+    }
+
     /// Get the slice of colors.
     pub fn slice(self: Self) []Color {
         return .{ .ptr = @ptrCast(self.handle.colors), .len = @intCast(self.handle.ncolors) };
     }
 };
-
-// TODO!!!

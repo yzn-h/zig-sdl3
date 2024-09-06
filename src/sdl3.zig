@@ -6,6 +6,7 @@ pub const audio = @import("audio.zig");
 pub const c = @import("c_sdl.zig").C_SDL;
 pub const errors = @import("error.zig");
 pub const init = @import("init.zig");
+pub const io_stream = @import("io_stream.zig");
 pub const message_box = @import("message_box.zig");
 pub const misc = @import("misc.zig");
 pub const properties = @import("properties.zig");

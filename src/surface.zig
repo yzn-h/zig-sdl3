@@ -2,6 +2,7 @@ const C_SDL = @import("c_sdl.zig").C_SDL;
 const Error = @import("error.zig").Error;
 const Group = @import("properties.zig").Group;
 const pixels = @import("pixels.zig");
+const std = @import("std");
 
 /// Surface handle. A lot of stuff is read only so.
 pub const SurfaceHandle = *C_SDL.SDL_Surface;
@@ -59,6 +60,12 @@ pub const Surface = struct {
         }
     };
 
+    /// Add an alternate image.
+    pub fn addAlternateImage(self: Self, other: Self) !void {
+        if (!C_SDL.SDL_AddSurfaceAlternateImage(self.handle, other.handle))
+            return error.SDLError;
+    }
+
     /// Create a new palette for the surface.
     pub fn createPalette(self: Self) !pixels.Palette {
         const ret = C_SDL.SDL_CreateSurfacePalette(self.handle);
@@ -82,12 +89,31 @@ pub const Surface = struct {
         return @enumFromInt(C_SDL.SDL_GetSurfaceColorspace(self.handle));
     }
 
+    /// Get surface images including this one. Memory returned must be freed.
+    pub fn getImages(self: Self, allocator: std.mem.Allocator) ![]Self {
+        var count: c_int = undefined;
+        const tmp = C_SDL.SDL_GetSurfaceImages(self.handle, &count);
+        defer C_SDL.SDL_free(tmp);
+        if (tmp == 0)
+            return error.SDLError;
+        var ret = try allocator.alloc(Surface, @intCast(count));
+        for (0..count) |ind| {
+            ret[ind] = fromHandle(tmp[ind]);
+        }
+        return ret;
+    }
+
     /// Get the palette for the surface, or null if none are in use.
     pub fn getPalette(self: Self) ?pixels.Palette {
         const ret = C_SDL.SDL_GetSurfacePalette(self.handle);
         if (ret == 0)
             return null;
         return .{ .handle = ret };
+    }
+
+    /// If alternate images for the surface are available.
+    pub fn hasAlternateImages(self: Self) bool {
+        return C_SDL.SDL_SurfaceHasAlternateImages(self.handle);
     }
 
     /// Initialize a surface.
@@ -106,12 +132,23 @@ pub const Surface = struct {
         return fromHandle(ret);
     }
 
+    /// Lock a surface for direct pixel access.
+    pub fn lock(self: Self) !void {
+        if (!C_SDL.SDL_LockSurface(self.handle))
+            return error.SDLError;
+    }
+
     /// Get the surface properties.
     pub fn properties(self: Self) Properties {
         const ret = C_SDL.SDL_GetSurfaceProperties(self.handle);
         if (ret == Group.invalid.id)
             return error.SDLError;
         return .{ .group = .{ .id = ret } };
+    }
+
+    /// Remove all alternate images for a surface.
+    pub fn removeAllAlternateImages(self: Self) void {
+        C_SDL.SDL_RemoveSurfaceAlternateImages(self.handle);
     }
 
     /// Set the colorspace of the surface.
@@ -124,5 +161,10 @@ pub const Surface = struct {
     pub fn setPalette(self: Self, palette: pixels.Palette) !void {
         if (!C_SDL.SDL_SetSurfacePalette(self.handle, palette.handle))
             return error.SDLError;
+    }
+
+    /// Unlock the surface after writing pixels.
+    pub fn unlock(self: Self) void {
+        C_SDL.SDL_UnlockSurface(self.handle);
     }
 };

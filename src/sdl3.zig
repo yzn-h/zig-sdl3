@@ -1,18 +1,19 @@
-// Assert not needed because zig.
-// Atomic not needed because zig.
-pub const audio = @import("audio.zig");
-// Begin code is not applicable.
-// Bits not needed because zig.
-pub const c = @import("c_sdl.zig").C_SDL;
-pub const errors = @import("error.zig");
+pub const blend = @import("blend.zig");
+pub const clipboard = @import("clipboard.zig");
+pub const errors = @import("errors.zig");
 pub const init = @import("init.zig");
-pub const io_stream = @import("io_stream.zig");
 pub const message_box = @import("message_box.zig");
 pub const misc = @import("misc.zig");
 pub const properties = @import("properties.zig");
-pub const rect = @import("rect.zig");
-pub const video = @import("video.zig");
+
+pub const C = @import("c.zig").C;
+
 const std = @import("std");
+
+/// Free memory allocated with SDL. For slices, pass in the pointer.
+pub fn free(mem: ?*anyopaque) void {
+    C.SDL_free(mem);
+}
 
 test {
     std.testing.refAllDecls(@This());

@@ -476,7 +476,7 @@ pub const Window = struct {
         var size: usize = undefined;
         const tmp: ?*u8 = if (C_SDL.SDL_GetWindowICCProfile(self.handle, &size)) |val| @ptrCast(val) else null;
         if (tmp) |val| {
-            var ret = try allocator.alloc(u8, size);
+            const ret = try allocator.alloc(u8, size);
             @memcpy(ret, val);
             C_SDL.SDL_free(tmp);
             return ret;

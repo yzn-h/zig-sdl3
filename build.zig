@@ -16,7 +16,7 @@ pub fn build(b: *std.Build) !void {
     _ = generateBindings(b, cfg);
     const sdl3 = b.addModule("sdl3", .{ .root_source_file = cfg.root_source_file });
     _ = setupTest(b, cfg);
-    _ = try setupExamples(b, sdl3, cfg);
+    // _ = try setupExamples(b, sdl3, cfg); TODO: DEPEND ON BINDINGS BUILT!
     _ = try runExample(b, sdl3, cfg);
 }
 

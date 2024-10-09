@@ -8,6 +8,7 @@ For monitoring how close various subsystems are to completion.
 
 ## Needs Testing
 * Clipboard
+* Loadso
 
 ## In Progress
 * Blend
@@ -30,7 +31,6 @@ For monitoring how close various subsystems are to completion.
 * Joystick
 * Keyboard
 * Keycode
-* Loadso
 * Locale
 * Log
 * Main

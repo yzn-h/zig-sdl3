@@ -59,6 +59,7 @@ Subsystems:
     Values:
       - Type: SDL_BlendMode
         Name: Mode
+        IsOpaque: false
         Comment: "Mode for blending colors."
         Presets:
           - ZigValue: None
@@ -651,7 +652,64 @@ Subsystems:
             try setAppMetadataProperty(.Creator, null);
             try std.testing.expect(getAppMetadataProperty(.Creator) == null);
             try std.testing.expect(getAppMetadataProperty(.Url) == null);;
-# TODO!!!
+  - Name: loadso
+    Callbacks: []
+    Enums: []
+    Errors: []
+    Values:
+      - Type: SDL_SharedObject
+        Name: SharedObject
+        IsOpaque: true
+        Comment: A shared object binary.
+        Presets: []
+        Functions:
+          - SdlName: SDL_LoadObject
+            ZigName: load
+            Comment: Load a shared object.
+            Return:
+              Sdl: SDL_SharedObject
+              Zig: !SharedObject
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: null
+            Arguments:
+              - Name: name
+                Type: string
+                Value: null
+          - SdlName: SDL_LoadFunction
+            ZigName: loadFunction
+            Comment: Get a function pointer to an exported function in the object file.
+            Return:
+              Sdl: "*void"
+              Zig: "?*anyopaque"
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_SharedObject
+                Value: null
+              - Name: name
+                Type: string
+                Value: null
+          - SdlName: SDL_UnloadObject
+            ZigName: unload
+            Comment: Unload the shared object.
+            Return:
+              Sdl: void
+              Zig: void
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_SharedObject
+                Value: null
+    Flags: []
+    StringMap: []
+    Structs: []
+    Functions: []
+    CustomFunctions: []
+    Tests: []
   - Name: message_box
     Callbacks: []
     Enums: []
@@ -807,6 +865,7 @@ Subsystems:
     Values:
       Type: SDL_PropertiesID
       Name: Group
+      IsOpaque: false
       Comment: "SDL properties group. Properties can be added or removed at runtime."
       Presets: []
       Functions:

@@ -43,6 +43,7 @@ const Function = struct {
 const Value = struct {
     type: []const u8,
     name: []const u8,
+    isOpaque: bool,
     comment: []const u8,
     presets: []const ValueData,
     functions: []const Function,
@@ -303,12 +304,16 @@ fn convertSdlValueToZig(allocator: std.mem.Allocator, val: []const u8, sdlType: 
     if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u8"))
         return std.fmt.allocPrint(allocator, "@intCast({s})", .{val});
 
+    // Void pointer idk.
+    if (std.mem.eql(u8, sdlType, "*void"))
+        return val;
+
     // Go through SDL types.
     if (sdl_types.get(sdlType)) |sdl_type| {
         return switch (sdl_type) {
             .Callback => val,
             .Enum => std.fmt.allocPrint(allocator, "@enumFromInt({s})", .{val}),
-            .Value => |v| std.fmt.allocPrint(allocator, "{s}{{ .value = {s} }}", .{ v.name, val }),
+            .Value => |v| if (v.isOpaque) std.fmt.allocPrint(allocator, "{s}{{ .value = {s}.? }}", .{ v.name, val }) else std.fmt.allocPrint(allocator, "{s}{{ .value = {s} }}", .{ v.name, val }),
             .Flag => |flag| std.fmt.allocPrint(allocator, "{s}.fromSdl({s})", .{ flag.name, val }),
             .StringMap => std.fmt.allocPrint(allocator, "std.mem.span({s})", .{val}),
         };
@@ -489,7 +494,9 @@ fn writeValue(allocator: std.mem.Allocator, writer: std.io.AnyWriter, val: Value
 
     // value: C.<type>,
     try nextLine(writer, indent + 1);
-    try writer.print("value: C.{s},", .{val.type});
+    if (val.isOpaque) {
+        try writer.print("value: *C.{s},", .{val.type});
+    } else try writer.print("value: C.{s},", .{val.type});
 
     // /// <comment>
     // pub const <zigValue> = <name> { .value = <sdlValue> };

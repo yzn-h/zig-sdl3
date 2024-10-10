@@ -59,8 +59,9 @@ Subsystems:
             Comment: "Max(Dst, Src)."
     Errors: []
     Values:
-      - Type: SDL_BlendMode
-        Name: Mode
+      - SdlName: SDL_BlendMode
+        ZigName: Mode
+        Type: $SDL.SDL_BlendMode
         IsOpaque: false
         Comment: "Mode for blending colors."
         Presets:
@@ -659,8 +660,9 @@ Subsystems:
     Enums: []
     Errors: []
     Values:
-      - Type: SDL_SharedObject
-        Name: SharedObject
+      - SdlName: SDL_SharedObject
+        ZigName: SharedObject
+        Type: $SDL.SDL_SharedObject
         IsOpaque: true
         Comment: A shared object binary.
         Presets: []
@@ -681,7 +683,7 @@ Subsystems:
                 Value: null
           - SdlName: SDL_LoadFunction
             ZigName: loadFunction
-            Comment: Get a function pointer to an exported function in the object file.
+            Comment: "Get a function pointer to an exported function in the object file. Result may be null."
             Return:
               Sdl: "*void"
               Zig: "?*anyopaque"
@@ -837,7 +839,6 @@ Subsystems:
             Value: null
     CustomFunctions: []
     Tests: []
-# TODO!!!
   - Name: properties
     Callbacks: []
     Enums:
@@ -866,8 +867,9 @@ Subsystems:
             Comment: null
     Errors: []
     Values:
-      Type: SDL_PropertiesID
-      Name: Group
+      SdlName: SDL_PropertiesID
+      ZigName: Group
+      Type: $SDL.SDL_PropertiesID
       IsOpaque: false
       Comment: "SDL properties group. Properties can be added or removed at runtime."
       Presets: []
@@ -1004,8 +1006,9 @@ Subsystems:
             Comment: null
     Errors: []
     Values:
-      - Type: SDL_Time
-        Name: Time
+      - SdlName: SDL_Time
+        ZigName: Time
+        Type: $SDL.SDL_Time
         IsOpaque: false
         Comment: "Nanoseconds since the unix epoch."
         Presets: []
@@ -1245,4 +1248,117 @@ Subsystems:
           try std.testing.expect(try getDayOfWeek(2001, Month.November, 2) == Day.Friday);
           try std.testing.expect(try getDayOfWeek(1984, Month.January, 11) == Day.Wednesday);
           try std.testing.expect(try getDayOfWeek(2024, Month.October, 9) == Day.Wednesday);
-          try std.testing.expectError(error.SdlError, getDayOfWeek(2020, Month.February, 31));
+          try std.testing.expectError(error.SdlError, getDayOfWeek(2020, Month.February, 31));;
+  - Name: version
+    Callbacks: []
+    Enums: []
+    Errors: []
+    Values:
+      - SdlName: SDL_Version
+        ZigName: Version
+        Type: c_int
+        IsOpaque: false
+        Comment: "SDL version information."
+        Presets:
+          - ZigValue: compiled_against
+            SdlValue: $SDL.SDL_VERSION
+            Comment: "SDL version compiled against."
+        Functions:
+          - SdlName: SDL_VERSIONNUM
+            ZigName: make
+            Comment: "Create an SDL version number."
+            Return:
+              Sdl: SDL_Version
+              Zig: Version
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: major
+                Type: u32
+                Value: null
+              - Name: minor
+                Type: u32
+                Value: null
+              - Name: micro
+                Type: u32
+                Value: null
+          - SdlName: SDL_VERSIONNUM_MAJOR
+            ZigName: getMajor
+            Comment: "Major version number."
+            Return:
+              Sdl: int
+              Zig: u32
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Version
+                Value: null
+          - SdlName: SDL_VERSIONNUM_MINOR
+            ZigName: getMinor
+            Comment: "Minor version number."
+            Return:
+              Sdl: int
+              Zig: u32
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Version
+                Value: null
+          - SdlName: SDL_VERSIONNUM_MICRO
+            ZigName: getMicro
+            Comment: "Micro version number."
+            Return:
+              Sdl: int
+              Zig: u32
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Version
+                Value: null
+          - SdlName: SDL_VERSION_ATLEAST
+            ZigName: atLeast
+            Comment: "Check if the SDL version is at least greater than the given one."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: major
+                Type: u32
+                Value: null
+              - Name: minor
+                Type: u32
+                Value: null
+              - Name: micro
+                Type: u32
+                Value: null
+          - SdlName: SDL_GetVersion
+            ZigName: get
+            Comment: "Get the version of SDL that is linked against your program. Possibly different than the compiled against version."
+            Return:
+              Sdl: SDL_Version
+              Zig: Version
+              Convert: null
+              Checks: []
+            Arguments: []
+          - SdlName: SDL_GetRevision
+            ZigName: getRevision
+            Comment: "Get the code revision of SDL that is linked against your program."
+            Return:
+              Sdl: string
+              Zig: "?[]const u8"
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEqStr
+                  ComparisonVal: """"
+            Arguments: []
+    Flags: []
+    StringMap: []
+    Structs: []
+    Functions: []
+    CustomFunctions: []
+    Tests: []

@@ -42,8 +42,9 @@ const Function = struct {
 };
 
 const Value = struct {
+    sdlName: []const u8,
+    zigName: []const u8,
     type: []const u8,
-    name: []const u8,
     isOpaque: bool,
     comment: []const u8,
     presets: []const ValueData,
@@ -224,7 +225,7 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
         return switch (sdl_type) {
             .Callback => |cb| try std.fmt.allocPrint(allocator, "{s}(UserData)", .{cb.func.zigName}),
             .Enum => |en| en.zigType,
-            .Value => |val| val.name,
+            .Value => |val| val.zigName,
             .Flag => |flag| flag.name,
             .StringMap => sdl,
             .Struct => |st| st.name,
@@ -326,7 +327,7 @@ fn convertSdlValueToZig(allocator: std.mem.Allocator, val: []const u8, sdlType: 
         return switch (sdl_type) {
             .Callback => val,
             .Enum => std.fmt.allocPrint(allocator, "@enumFromInt({s})", .{val}),
-            .Value => |v| if (v.isOpaque) std.fmt.allocPrint(allocator, "{s}{{ .value = {s}.? }}", .{ v.name, val }) else std.fmt.allocPrint(allocator, "{s}{{ .value = {s} }}", .{ v.name, val }),
+            .Value => |v| if (v.isOpaque) std.fmt.allocPrint(allocator, "{s}{{ .value = {s}.? }}", .{ v.zigName, val }) else std.fmt.allocPrint(allocator, "{s}{{ .value = {s} }}", .{ v.zigName, val }),
             .Flag => |flag| std.fmt.allocPrint(allocator, "{s}.fromSdl({s})", .{ flag.name, val }),
             .StringMap => std.fmt.allocPrint(allocator, "std.mem.span({s})", .{val}),
             .Struct => |st| return std.fmt.allocPrint(allocator, "{s}.fromSdl({s})", .{ st.name, val }),
@@ -504,13 +505,13 @@ fn writeValue(allocator: std.mem.Allocator, writer: std.io.AnyWriter, val: Value
     try nextLine(writer, indent);
     try writer.print("/// {s}", .{val.comment});
     try nextLine(writer, indent);
-    try writer.print("pub const {s} = struct {{", .{val.name});
+    try writer.print("pub const {s} = struct {{", .{val.zigName});
 
     // value: C.<type>,
     try nextLine(writer, indent + 1);
     if (val.isOpaque) {
-        try writer.print("value: *C.{s},", .{val.type});
-    } else try writer.print("value: C.{s},", .{val.type});
+        try writer.print("value: *{s},", .{try std.mem.replaceOwned(u8, allocator, val.type, "$SDL", "C")});
+    } else try writer.print("value: {s},", .{try std.mem.replaceOwned(u8, allocator, val.type, "$SDL", "C")});
 
     // /// <comment>
     // pub const <zigValue> = <name> { .value = <sdlValue> };
@@ -523,7 +524,7 @@ fn writeValue(allocator: std.mem.Allocator, writer: std.io.AnyWriter, val: Value
         try writer.writeAll(try std.mem.replaceOwned(
             u8,
             allocator,
-            try std.fmt.allocPrint(allocator, "pub const {s} = {s}{{ .value = {s} }};", .{ preset.zigValue, val.name, preset.sdlValue }),
+            try std.fmt.allocPrint(allocator, "pub const {s} = {s}{{ .value = {s} }};", .{ preset.zigValue, val.zigName, preset.sdlValue }),
             "$SDL",
             "C",
         ));
@@ -1138,7 +1139,7 @@ pub fn main() !void {
             try sdl_types.put(en.sdlType, SdlTypeData{ .Enum = en });
         }
         for (subsystem.values) |val| {
-            try sdl_types.put(val.type, SdlTypeData{ .Value = val });
+            try sdl_types.put(val.sdlName, SdlTypeData{ .Value = val });
         }
         for (subsystem.flags) |flag| {
             try sdl_types.put(flag.type, SdlTypeData{ .Flag = flag });
@@ -1166,6 +1167,10 @@ pub fn main() !void {
         ), .{ .truncate = true });
         defer file.close();
 
+        // Single name count. Special case to just import the subsystem directly.
+        var item_cnt: usize = 0;
+        var single_name: []const u8 = undefined;
+
         // Write base data.
         const writer = file.writer().any();
         try writer.writeAll("// This file was generated using `zig build bindings`. Do not manually edit!\n\nconst C = @import(\"c.zig\").C;\nconst std = @import(\"std\");");
@@ -1174,29 +1179,58 @@ pub fn main() !void {
         }
         for (subsystem.enums) |en| {
             try writeEnum(allocator, writer, en, 0);
+            if (item_cnt == 0) {
+                single_name = en.zigType;
+            }
+            item_cnt += 1;
         }
         for (subsystem.errors) |err| {
             try writeError(writer, err, 0);
+            if (item_cnt == 0) {
+                single_name = err.name;
+            }
+            item_cnt += 1;
         }
         for (subsystem.values) |val| {
             try writeValue(allocator, writer, val, 0, sdl_types);
+            if (item_cnt == 0) {
+                single_name = val.zigName;
+            }
+            item_cnt += 1;
         }
         for (subsystem.flags) |flag| {
             try writeFlag(allocator, writer, flag, 0);
+            if (item_cnt == 0) {
+                single_name = flag.name;
+            }
+            item_cnt += 1;
         }
         for (subsystem.stringMap) |map| {
             try writeMap(writer, map, 0);
+            if (item_cnt == 0) {
+                single_name = map.name;
+            }
+            item_cnt += 1;
         }
         for (subsystem.structs) |st| {
             try writeStruct(allocator, writer, st, 0, sdl_types);
+            if (item_cnt == 0) {
+                single_name = st.name;
+            }
+            item_cnt += 1;
         }
         for (subsystem.functions) |func| {
             try writeFunction(allocator, writer, func, 0, sdl_types);
+            if (item_cnt == 0) {
+                single_name = func.zigName;
+            }
+            item_cnt += 1;
         }
         for (subsystem.customFunctions) |func| {
             try nextLine(writer, 0);
             try nextLine(writer, 0);
             try writer.writeAll(func.code);
+            item_cnt += 2;
         }
         for (subsystem.tests) |t| {
             try writeTest(allocator, writer, t);
@@ -1204,7 +1238,9 @@ pub fn main() !void {
         try nextLine(writer, 0);
 
         // Add import to main file.
-        try sdl_file.writer().print("pub const {s} = @import(\"{s}.zig\");\n", .{ subsystem.name, subsystem.name });
+        if (item_cnt != 1) {
+            try sdl_file.writer().print("pub const {s} = @import(\"{s}.zig\");\n", .{ subsystem.name, subsystem.name });
+        } else try sdl_file.writer().print("pub const {s} = @import(\"{s}.zig\").{s};\n", .{ single_name, subsystem.name, single_name });
     }
 
     // C bindings.

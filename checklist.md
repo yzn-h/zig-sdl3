@@ -10,6 +10,7 @@ For monitoring how close various subsystems are to completion.
 * Clipboard
 * Loadso
 * Time
+* Version
 
 ## In Progress
 * Blend
@@ -51,7 +52,6 @@ For monitoring how close various subsystems are to completion.
 * System
 * Timer
 * Touch
-* Version
 * Video
 * Vulkan
 

@@ -19,7 +19,7 @@ pub const SharedObject = struct {
 		return SharedObject{ .value = ret.? };
 	}
 
-	/// Get a function pointer to an exported function in the object file.
+	/// Get a function pointer to an exported function in the object file. Result may be null.
 	pub fn loadFunction(
 		self: SharedObject,
 		name: [:0]const u8,

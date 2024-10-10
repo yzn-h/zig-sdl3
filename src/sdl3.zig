@@ -2,11 +2,12 @@ pub const blend = @import("blend.zig");
 pub const clipboard = @import("clipboard.zig");
 pub const errors = @import("errors.zig");
 pub const init = @import("init.zig");
-pub const loadso = @import("loadso.zig");
+pub const SharedObject = @import("loadso.zig").SharedObject;
 pub const message_box = @import("message_box.zig");
-pub const misc = @import("misc.zig");
+pub const openURL = @import("misc.zig").openURL;
 pub const properties = @import("properties.zig");
 pub const time = @import("time.zig");
+pub const Version = @import("version.zig").Version;
 
 pub const C = @import("c.zig").C;
 

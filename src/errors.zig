@@ -5,7 +5,7 @@ const std = @import("std");
 
 /// An SDL error.
 pub const Error = error{
-	SDLError,
+	SdlError,
 };
 
 /// Set the current SDL error.
@@ -51,4 +51,3 @@ test "Error" {
 	clear();
 	try std.testing.expect(get() == null);
 }
-

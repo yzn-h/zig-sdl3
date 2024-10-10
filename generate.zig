@@ -10,6 +10,7 @@ const ValueData = struct {
 const Enum = struct {
     sdlType: []const u8,
     zigType: []const u8,
+    internalType: []const u8,
     comment: []const u8,
     values: []const ValueData,
 };
@@ -126,6 +127,7 @@ const SdlType = enum {
     Value,
     Flag,
     StringMap,
+    Struct,
 };
 
 const SdlTypeData = union(SdlType) {
@@ -137,6 +139,7 @@ const SdlTypeData = union(SdlType) {
     Value: Value,
     Flag: Flag,
     StringMap: StringMap,
+    Struct: Struct,
 };
 
 const GeneratorError = error{
@@ -201,8 +204,12 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
         return "i32";
 
     // Zig int.
-    if (std.mem.eql(u8, sdl, "u8"))
-        return "u8";
+    if (std.mem.eql(u8, sdl, "u5") or std.mem.eql(u8, sdl, "u6") or std.mem.eql(u8, sdl, "u8") or std.mem.eql(u8, sdl, "u31") or std.mem.eql(u8, sdl, "u32") or std.mem.eql(u8, sdl, "usize"))
+        return sdl;
+
+    // Type.
+    if (std.mem.eql(u8, sdl, "bool"))
+        return "bool";
 
     // Type.
     if (std.mem.eql(u8, sdl, "type"))
@@ -220,6 +227,7 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
             .Value => |val| val.name,
             .Flag => |flag| flag.name,
             .StringMap => sdl,
+            .Struct => |st| st.name,
         };
     }
 
@@ -243,8 +251,12 @@ fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: 
         return std.fmt.allocPrint(allocator, "if ({s}) |str_capture| str_capture.ptr else null", .{val});
 
     // Int, just cast it.
-    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u8"))
+    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32"))
         return std.fmt.allocPrint(allocator, "@intCast({s})", .{val});
+
+    // Bool.
+    if (std.mem.eql(u8, sdlType, "bool"))
+        return val;
 
     // Go through SDL types.
     if (sdl_types.get(sdlType)) |sdl_type| {
@@ -274,11 +286,12 @@ fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: 
                 }
                 return try std.fmt.allocPrint(allocator, "{s}}}", .{ret});
             },
+            .Struct => return std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val}),
         };
     }
 
     // Idk.
-    std.debug.print("Val: {s}\n", .{val});
+    std.debug.print("Val: {s}, Type: {s}\n", .{ val, sdlType });
     return error.UnknownZigValueToSdlValue;
 }
 
@@ -301,7 +314,7 @@ fn convertSdlValueToZig(allocator: std.mem.Allocator, val: []const u8, sdlType: 
         return val;
 
     // Int, just cast it.
-    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u8"))
+    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31"))
         return std.fmt.allocPrint(allocator, "@intCast({s})", .{val});
 
     // Void pointer idk.
@@ -316,6 +329,7 @@ fn convertSdlValueToZig(allocator: std.mem.Allocator, val: []const u8, sdlType: 
             .Value => |v| if (v.isOpaque) std.fmt.allocPrint(allocator, "{s}{{ .value = {s}.? }}", .{ v.name, val }) else std.fmt.allocPrint(allocator, "{s}{{ .value = {s} }}", .{ v.name, val }),
             .Flag => |flag| std.fmt.allocPrint(allocator, "{s}.fromSdl({s})", .{ flag.name, val }),
             .StringMap => std.fmt.allocPrint(allocator, "std.mem.span({s})", .{val}),
+            .Struct => |st| return std.fmt.allocPrint(allocator, "{s}.fromSdl({s})", .{ st.name, val }),
         };
     }
 
@@ -428,16 +442,16 @@ fn nextLine(writer: std.io.AnyWriter, indent: usize) !void {
     }
 }
 
-fn writeEnum(writer: std.io.AnyWriter, en: Enum, indent: usize) !void {
+fn writeEnum(allocator: std.mem.Allocator, writer: std.io.AnyWriter, en: Enum, indent: usize) !void {
 
     //
     // /// <comment>
-    // pub const <zigType> = enum(c_uint) {
+    // pub const <zigType> = enum(<internalType>) {
     try nextLine(writer, 0);
     try nextLine(writer, indent);
     try writer.print("/// {s}", .{en.comment});
     try nextLine(writer, indent);
-    try writer.print("pub const {s} = enum(c_uint) {{", .{en.zigType});
+    try writer.print("pub const {s} = enum({s}) {{", .{ en.zigType, en.internalType });
 
     // /// <comment>
     // <zigValue> = C.<sdlValue>,
@@ -451,7 +465,7 @@ fn writeEnum(writer: std.io.AnyWriter, en: Enum, indent: usize) !void {
 
         // Write value.
         try nextLine(writer, indent + 1);
-        try writer.print("{s} = C.{s},", .{ val.zigValue, val.sdlValue });
+        try writer.print("{s} = {s},", .{ val.zigValue, try std.mem.replaceOwned(u8, allocator, val.sdlValue, "$SDL", "C") });
     }
 
     // };
@@ -980,7 +994,11 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
     var generics = std.StringHashMap(void).init(allocator);
     var num_args: usize = 0;
     for (func.arguments) |arg| {
-        if (std.mem.eql(u8, arg.value, "null")) {
+        if (std.mem.startsWith(u8, arg.type, "*const ")) {
+            try nextLine(writer, indent + 1);
+            try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToZigType(allocator, arg.type[7..], sdl_types, generics, false) });
+            num_args += 1;
+        } else if (std.mem.eql(u8, arg.value, "null")) {
             try nextLine(writer, indent + 1);
             try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToZigType(allocator, arg.type, sdl_types, generics, false) });
             num_args += 1;
@@ -1000,7 +1018,21 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
     for (func.arguments) |arg| {
         if (arg.value[0] == '&') {
             try nextLine(writer, indent + 1);
-            try writer.print("var {s}: {s} = undefined;", .{ arg.name, arg.type });
+            try writer.print("var {s}: {s} = undefined;", .{
+                arg.name,
+                if (sdl_types.get(arg.type) != null) try std.fmt.allocPrint(allocator, "C.{s}", .{arg.type}) else arg.type,
+            });
+        }
+        const const_ptr = "*const ";
+        const const_ptr_len = const_ptr.len;
+        if (std.mem.startsWith(u8, arg.type, const_ptr)) {
+            const real_type = arg.type[const_ptr_len..];
+            try nextLine(writer, indent + 1);
+            try writer.print("const {s}: {s} = {s};", .{
+                try std.fmt.allocPrint(allocator, "{s}_sdl", .{arg.name}),
+                if (sdl_types.get(real_type) != null) try std.fmt.allocPrint(allocator, "C.{s}", .{real_type}) else real_type,
+                try convertZigValueToSdl(allocator, arg.name, real_type, sdl_types, indent + 1),
+            });
         }
     }
 
@@ -1015,9 +1047,12 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
         if (std.mem.eql(u8, arg.type, "type") or generics.get(arg.type) != null or generics.get(arg.type[1..]) != null)
             continue;
         try nextLine(writer, indent + 2);
-        try writer.print("{s},", .{
-            if (std.mem.eql(u8, arg.value, "null")) try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types, indent + 2) else arg.value,
-        });
+        var val = arg.value;
+        if (std.mem.startsWith(u8, arg.type, "*const ")) {
+            val = try std.fmt.allocPrint(allocator, "&{s}_sdl", .{arg.name});
+        } else if (std.mem.eql(u8, arg.value, "null"))
+            val = try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types, indent + 2);
+        try writer.print("{s},", .{val});
         num_args += 1;
     }
 
@@ -1031,6 +1066,12 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
 
     // Return if not a void type.
     if (!std.mem.eql(u8, func.ret.zig, "void") and !std.mem.eql(u8, func.ret.zig, "!void")) {
+
+        // Special case: SDL is void type.
+        if (std.mem.eql(u8, func.ret.sdl, "void")) {
+            try nextLine(writer, indent + 1);
+            try writer.writeAll("_ = ret;");
+        }
 
         // return <convert ret>;
         try nextLine(writer, indent + 1);
@@ -1067,7 +1108,6 @@ fn writeTest(allocator: std.mem.Allocator, writer: std.io.AnyWriter, t: Test) !v
     try writer.print(
         \\
         \\}}
-        \\
     , .{});
 }
 
@@ -1106,9 +1146,9 @@ pub fn main() !void {
         for (subsystem.stringMap) |map| {
             try sdl_types.put(map.name, SdlTypeData{ .StringMap = map });
         }
-        // for (subsystem.structs) |st| {
-        // try sdl_types.put(st.type, SdlTypeData{ .Struct });
-        // }
+        for (subsystem.structs) |st| {
+            try sdl_types.put(st.type, SdlTypeData{ .Struct = st });
+        }
     }
 
     // Recreate generated folder.
@@ -1133,7 +1173,7 @@ pub fn main() !void {
             try writeCallback(allocator, writer, cb, 0, sdl_types);
         }
         for (subsystem.enums) |en| {
-            try writeEnum(writer, en, 0);
+            try writeEnum(allocator, writer, en, 0);
         }
         for (subsystem.errors) |err| {
             try writeError(writer, err, 0);

@@ -146,5 +146,5 @@ pub fn setData(
         mime_types.len,
     );
     if (!ret)
-        return error.SDLError;
+        return error.SdlError;
 }

@@ -6,6 +6,7 @@ pub const loadso = @import("loadso.zig");
 pub const message_box = @import("message_box.zig");
 pub const misc = @import("misc.zig");
 pub const properties = @import("properties.zig");
+pub const time = @import("time.zig");
 
 pub const C = @import("c.zig").C;
 

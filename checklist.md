@@ -9,6 +9,7 @@ For monitoring how close various subsystems are to completion.
 ## Needs Testing
 * Clipboard
 * Loadso
+* Time
 
 ## In Progress
 * Blend
@@ -48,7 +49,6 @@ For monitoring how close various subsystems are to completion.
 * Storage
 * Surface
 * System
-* Time
 * Timer
 * Touch
 * Version

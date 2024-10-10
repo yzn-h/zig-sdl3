@@ -178,4 +178,3 @@ test "Init" {
 	  try std.testing.expect(getAppMetadataProperty(.Creator) == null);
 	  try std.testing.expect(getAppMetadataProperty(.Url) == null);
 }
-

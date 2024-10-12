@@ -20,7 +20,7 @@ pub const GUID = struct {
 		_ = ret;
 	}
 
-	/// Convert a GUID string into a SDL_GUID structure.
+	/// Convert a GUID string into a SDL_GUID structure. TODO, Determine if this copies properly!
 	pub fn fromString(
 		buf: [:0]const u8,
 	) GUID {

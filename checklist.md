@@ -15,6 +15,7 @@ For monitoring how close various subsystems are to completion.
 * Version
 
 ## In Progress
+* Hints
 * Message Box
 * Properties
 
@@ -28,7 +29,6 @@ For monitoring how close various subsystems are to completion.
 * GPU
 * Haptic
 * HID
-* Hints
 * IO Stream
 * Joystick
 * Keyboard

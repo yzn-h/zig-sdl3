@@ -62,6 +62,38 @@ pub const AppMetadataProperty = enum {
 	Copyright,
 	Url,
 	Type,
+
+	/// Convert from an SDL string.
+	pub fn fromSdl(val: [:0]const u8) AppMetadataProperty {
+		if (std.mem.eql(u8, C.SDL_PROP_APP_METADATA_NAME_STRING, val))
+			return .Name;
+		if (std.mem.eql(u8, C.SDL_PROP_APP_METADATA_VERSION_STRING, val))
+			return .Version;
+		if (std.mem.eql(u8, C.SDL_PROP_APP_METADATA_IDENTIFIER_STRING, val))
+			return .Identifier;
+		if (std.mem.eql(u8, C.SDL_PROP_APP_METADATA_CREATOR_STRING, val))
+			return .Creator;
+		if (std.mem.eql(u8, C.SDL_PROP_APP_METADATA_COPYRIGHT_STRING, val))
+			return .Copyright;
+		if (std.mem.eql(u8, C.SDL_PROP_APP_METADATA_URL_STRING, val))
+			return .Url;
+		if (std.mem.eql(u8, C.SDL_PROP_APP_METADATA_TYPE_STRING, val))
+			return .Type;
+		return .Name;
+	}
+
+	/// Convert to an SDL string.
+	pub fn toSdl(self: AppMetadataProperty) [:0]const u8 {
+		return switch (self) {
+			.Name => C.SDL_PROP_APP_METADATA_NAME_STRING,
+			.Version => C.SDL_PROP_APP_METADATA_VERSION_STRING,
+			.Identifier => C.SDL_PROP_APP_METADATA_IDENTIFIER_STRING,
+			.Creator => C.SDL_PROP_APP_METADATA_CREATOR_STRING,
+			.Copyright => C.SDL_PROP_APP_METADATA_COPYRIGHT_STRING,
+			.Url => C.SDL_PROP_APP_METADATA_URL_STRING,
+			.Type => C.SDL_PROP_APP_METADATA_TYPE_STRING,
+		};
+	}
 };
 
 /// Initialize the SDL systems. Each system is ref-counted so init and quit each one, then call shutdown.
@@ -122,15 +154,7 @@ pub fn setAppMetadataProperty(
 	value: ?[:0]const u8,
 ) !void {
 	const ret = C.SDL_SetAppMetadataProperty(
-		switch (property) { 
-			.Name => C.SDL_PROP_APP_METADATA_NAME_STRING, 
-			.Version => C.SDL_PROP_APP_METADATA_VERSION_STRING, 
-			.Identifier => C.SDL_PROP_APP_METADATA_IDENTIFIER_STRING, 
-			.Creator => C.SDL_PROP_APP_METADATA_CREATOR_STRING, 
-			.Copyright => C.SDL_PROP_APP_METADATA_COPYRIGHT_STRING, 
-			.Url => C.SDL_PROP_APP_METADATA_URL_STRING, 
-			.Type => C.SDL_PROP_APP_METADATA_TYPE_STRING, 
-		},
+		property.toSdl(),
 		if (value) |str_capture| str_capture.ptr else null,
 	);
 	if (!ret)
@@ -142,15 +166,7 @@ pub fn getAppMetadataProperty(
 	property: AppMetadataProperty,
 ) ?[]const u8 {
 	const ret = C.SDL_GetAppMetadataProperty(
-		switch (property) { 
-			.Name => C.SDL_PROP_APP_METADATA_NAME_STRING, 
-			.Version => C.SDL_PROP_APP_METADATA_VERSION_STRING, 
-			.Identifier => C.SDL_PROP_APP_METADATA_IDENTIFIER_STRING, 
-			.Creator => C.SDL_PROP_APP_METADATA_CREATOR_STRING, 
-			.Copyright => C.SDL_PROP_APP_METADATA_COPYRIGHT_STRING, 
-			.Url => C.SDL_PROP_APP_METADATA_URL_STRING, 
-			.Type => C.SDL_PROP_APP_METADATA_TYPE_STRING, 
-		},
+		property.toSdl(),
 	);
 	if (ret == null)
 		return null;

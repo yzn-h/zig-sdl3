@@ -2,6 +2,7 @@ pub const blend_mode = @import("blend_mode.zig");
 pub const clipboard = @import("clipboard.zig");
 pub const errors = @import("errors.zig");
 pub const GUID = @import("guid.zig").GUID;
+pub const hints = @import("hints.zig");
 pub const init = @import("init.zig");
 pub const SharedObject = @import("loadso.zig").SharedObject;
 pub const message_box = @import("message_box.zig");

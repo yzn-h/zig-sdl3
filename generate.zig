@@ -73,7 +73,8 @@ const Flag = struct {
 };
 
 const StringMap = struct {
-    name: []const u8,
+    sdlName: []const u8,
+    zigName: []const u8,
     comment: []const u8,
     values: []const ValueData,
 };
@@ -153,8 +154,7 @@ const GeneratorError = error{
     UnknownReturnCheck,
 };
 
-fn sdlTypeToTrueSdlType(sdl: []const u8, sdl_types: std.StringHashMap(SdlTypeData), generics: std.StringHashMap(void)) ![]const u8 {
-    _ = sdl_types;
+fn sdlTypeToTrueSdlType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: std.StringHashMap(SdlTypeData), generics: std.StringHashMap(void)) ![]const u8 {
 
     // String.
     if (std.mem.eql(u8, sdl, "string") or std.mem.eql(u8, sdl, "stringptr") or std.mem.eql(u8, sdl, "?string") or std.mem.eql(u8, sdl, "zigstring") or std.mem.eql(u8, sdl, "?zigstring"))
@@ -177,6 +177,15 @@ fn sdlTypeToTrueSdlType(sdl: []const u8, sdl_types: std.StringHashMap(SdlTypeDat
         return "?*anyopaque";
     if (generics.get(sdl[1..])) |_| // Pointer or whatever
         return "?*anyopaque";
+
+    // SDL type.
+    const gotten_sdl_type = sdl_types.get(sdl);
+    if (gotten_sdl_type) |val| {
+        return switch (val) {
+            .StringMap => "[:0]const u8",
+            else => std.fmt.allocPrint(allocator, "C.{s}", .{sdl}),
+        };
+    }
 
     // Idk.
     std.debug.print("Type: {s}\n", .{sdl});
@@ -228,11 +237,11 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
     // Go through SDL types.
     if (sdl_types.get(sdl)) |sdl_type| {
         return switch (sdl_type) {
-            .Callback => |cb| try std.fmt.allocPrint(allocator, "{s}(UserData)", .{cb.func.zigName}),
+            .Callback => |cb| try std.fmt.allocPrint(allocator, "{s}Data(UserData)", .{cb.func.zigName}),
             .Enum => |en| en.zigType,
             .Value => |val| val.zigName,
             .Flag => |flag| flag.name,
-            .StringMap => sdl,
+            .StringMap => |map| map.zigName,
             .Struct => |st| st.name,
         };
     }
@@ -242,7 +251,7 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
     return error.UnknownSdlToZigType;
 }
 
-fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: []const u8, sdl_types: std.StringHashMap(SdlTypeData), indent: usize) ![]const u8 {
+fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: []const u8, sdl_types: std.StringHashMap(SdlTypeData)) ![]const u8 {
 
     // String type, just return value as it is.
     if (std.mem.eql(u8, sdlType, "string"))
@@ -271,27 +280,7 @@ fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: 
             .Enum => std.fmt.allocPrint(allocator, "@intFromEnum({s})", .{val}),
             .Value => std.fmt.allocPrint(allocator, "{s}.value", .{val}),
             .Flag => std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val}),
-            .StringMap => |map| {
-
-                // switch (<name>) {
-                //  .<zigValue> => C.<sdlValue>,
-                // }
-                var ret = try std.fmt.allocPrint(allocator, "switch ({s}) {{ ", .{val});
-                for (map.values) |map_val| {
-                    ret = try std.fmt.allocPrint(allocator, "{s}\n", .{ret});
-                    for (0..indent + 1) |_| {
-                        ret = try std.fmt.allocPrint(allocator, "{s}\t", .{ret});
-                    }
-                    ret = try std.fmt.allocPrint(allocator, "{s}.{s} => C.{s}, ", .{ ret, map_val.zigValue, map_val.sdlValue });
-                }
-                if (map.values.len > 0) {
-                    ret = try std.fmt.allocPrint(allocator, "{s}\n", .{ret});
-                    for (0..indent) |_| {
-                        ret = try std.fmt.allocPrint(allocator, "{s}\t", .{ret});
-                    }
-                }
-                return try std.fmt.allocPrint(allocator, "{s}}}", .{ret});
-            },
+            .StringMap => std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val}),
             .Struct => return std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val}),
         };
     }
@@ -334,7 +323,7 @@ fn convertSdlValueToZig(allocator: std.mem.Allocator, val: []const u8, sdlType: 
             .Enum => std.fmt.allocPrint(allocator, "@enumFromInt({s})", .{val}),
             .Value => |v| if (v.isOpaque) std.fmt.allocPrint(allocator, "{s}{{ .value = {s}.? }}", .{ v.zigName, val }) else std.fmt.allocPrint(allocator, "{s}{{ .value = {s} }}", .{ v.zigName, val }),
             .Flag => |flag| std.fmt.allocPrint(allocator, "{s}.fromSdl({s})", .{ flag.name, val }),
-            .StringMap => std.fmt.allocPrint(allocator, "std.mem.span({s})", .{val}),
+            .StringMap => |map| std.fmt.allocPrint(allocator, "{s}.fromSdl({s})", .{ map.zigName, val }),
             .Struct => |st| return std.fmt.allocPrint(allocator, "{s}.fromSdl({s})", .{ st.name, val }),
         };
     }
@@ -647,7 +636,7 @@ fn writeMap(writer: std.io.AnyWriter, map: StringMap, indent: usize) !void {
     try nextLine(writer, indent);
     try writer.print("/// {s}", .{map.comment});
     try nextLine(writer, indent);
-    try writer.print("pub const {s} = enum {{", .{map.name});
+    try writer.print("pub const {s} = enum {{", .{map.zigName});
 
     // /// <comment>
     // <zigValue> = C.<sdlValue>,
@@ -663,6 +652,57 @@ fn writeMap(writer: std.io.AnyWriter, map: StringMap, indent: usize) !void {
         try nextLine(writer, indent + 1);
         try writer.print("{s},", .{val.zigValue});
     }
+
+    //
+    // /// Convert from an SDL string.
+    // pub fn fromSdl(val: [:0]const u8) <name> {
+    try nextLine(writer, 0);
+    try nextLine(writer, indent + 1);
+    try writer.writeAll("/// Convert from an SDL string.");
+    try nextLine(writer, indent + 1);
+    try writer.print("pub fn fromSdl(val: [:0]const u8) {s} {{", .{map.zigName});
+
+    // if (std.mem.eql(u8, C.<sdl>, val))
+    //  return .<name>;
+    for (map.values) |val| {
+        try nextLine(writer, indent + 2);
+        try writer.print("if (std.mem.eql(u8, C.{s}, val))", .{val.sdlValue});
+        try nextLine(writer, indent + 3);
+        try writer.print("return .{s};", .{val.zigValue});
+    }
+
+    // Idk, return first time.
+    try nextLine(writer, indent + 2);
+    try writer.print("return .{s};", .{map.values[0].zigValue});
+
+    // }
+    try nextLine(writer, indent + 1);
+    try writer.writeAll("}");
+
+    //
+    // /// Convert to an SDL string.
+    // pub fn toSdl(self: <zigValue>) [:0]const u8 {
+    try nextLine(writer, 0);
+    try nextLine(writer, indent + 1);
+    try writer.writeAll("/// Convert to an SDL string.");
+    try nextLine(writer, indent + 1);
+    try writer.print("pub fn toSdl(self: {s}) [:0]const u8 {{", .{map.zigName});
+
+    //  return switch (self) {
+    //	    .<zigName> => C.<sdlName>,
+    //	};
+    try nextLine(writer, indent + 2);
+    try writer.writeAll("return switch (self) {");
+    for (map.values) |val| {
+        try nextLine(writer, indent + 3);
+        try writer.print(".{s} => C.{s},", .{ val.zigValue, val.sdlValue });
+    }
+    try nextLine(writer, indent + 2);
+    try writer.writeAll("};");
+
+    // }
+    try nextLine(writer, indent + 1);
+    try writer.writeAll("}");
 
     // };
     try nextLine(writer, indent);
@@ -744,7 +784,6 @@ fn writeStruct(allocator: std.mem.Allocator, writer: std.io.AnyWriter, st: Struc
             try std.fmt.allocPrint(allocator, "self.{s}", .{member.sdlName}),
             member.type,
             sdl_types,
-            indent + 2,
         ) });
     }
     try nextLine(writer, indent + 2);
@@ -767,38 +806,6 @@ fn writeStruct(allocator: std.mem.Allocator, writer: std.io.AnyWriter, st: Struc
     try writer.writeAll("};");
 }
 
-// Hard to grasp, so below is an example:
-//
-// pub fn DataCallback(
-// 	comptime UserData: type,
-// ) type {
-// 	return *const fn (
-// 		user_data: *UserData,
-// 		mime_type: [:0]const u8,
-// 	) []const u8;
-// }
-
-// const DataCallbackData = struct {
-//  cb: *const fn (
-//      user_data: ?*anyopaque,
-//      mime_type: []const u8
-//  ) []const u8,
-//  data: ?*anyopaque,
-// };
-
-// fn dataCallback(
-// 	user_data: ?*anyopaque,
-// 	mime_type: [*c]const u8,
-// 	size: *usize,
-// ) callconv(.C) []const u8 {
-//     const cb_data: *DataCallbackData = @ptrCast(@alignCast(user_data));
-//     const ret = cb_data.cb(
-//      cb_data.data,
-//      std.mem.span(mime_type)
-//     );
-//     *size = ret.len;
-//     return ret.ptr;
-// }
 fn writeCallback(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: Function, indent: usize, sdl_types: std.StringHashMap(SdlTypeData)) !void {
 
     //
@@ -851,36 +858,42 @@ fn writeCallback(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
 
     //
     // /// <comment>
-    // pub const <zigName>Data = struct {
-    //  cb: *const fn (
+    // pub fn {s}Data(comptime UserData: type) type {
+    //  return struct {
+    //      cb: *const fn (
     try nextLine(writer, 0);
     try nextLine(writer, indent);
     try writer.print("/// {s}", .{func.comment});
     try nextLine(writer, indent);
-    try writer.print("pub const {s}Data = struct {{", .{func.zigName});
+    try writer.print("pub fn {s}Data(comptime UserData: type) type {{", .{func.zigName});
     try nextLine(writer, indent + 1);
+    try writer.writeAll("return struct {");
+    try nextLine(writer, indent + 2);
     try writer.writeAll("cb: *const fn (");
 
     // <name: <type>,
     type_cnt = 0;
     for (func.arguments) |arg| {
         if (!std.mem.eql(u8, arg.type, "type") and std.mem.eql(u8, arg.value, "null")) {
-            try nextLine(writer, indent + 2);
-            try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToZigType(allocator, arg.type, sdl_types, generics, true) });
+            try nextLine(writer, indent + 3);
+            try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToZigType(allocator, arg.type, sdl_types, generics, false) });
             type_cnt += 1;
         }
     }
     if (type_cnt > 0)
-        try nextLine(writer, indent + 1);
+        try nextLine(writer, indent + 2);
 
-    //  ) <ret>,
-    //  data: ?*anyopaque,
-    // };
+    //      ) <ret>,
+    //      data: *UserData,
+    //  };
+    // }
     try writer.print(") {s},", .{func.ret.zig});
+    try nextLine(writer, indent + 2);
+    try writer.writeAll("data: *UserData,");
     try nextLine(writer, indent + 1);
-    try writer.writeAll("data: ?*anyopaque,");
-    try nextLine(writer, indent);
     try writer.writeAll("};");
+    try nextLine(writer, indent);
+    try writer.writeAll("}");
 
     //
     // /// <comment>
@@ -898,16 +911,16 @@ fn writeCallback(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
     for (func.arguments) |arg| {
         if (!std.mem.eql(u8, arg.type, "type")) {
             try nextLine(writer, indent + 1);
-            try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToTrueSdlType(arg.type, sdl_types, generics) });
+            try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToTrueSdlType(allocator, arg.type, sdl_types, generics) });
         }
     }
     if (func.arguments.len > 0)
         try nextLine(writer, indent);
 
     // ) callconv(.C) <return> {
-    try writer.print(") callconv(.C) {s} {{", .{try sdlTypeToTrueSdlType(func.ret.sdl, sdl_types, generics)});
+    try writer.print(") callconv(.C) {s} {{", .{try sdlTypeToTrueSdlType(allocator, func.ret.sdl, sdl_types, generics)});
 
-    // const cb_data: *<zigName>Data = @ptrCast(@alignCast(<firstGeneric>));
+    // const cb_data: *<zigName>Data(anyopaque) = @ptrCast(@alignCast(<firstGeneric>));
     var first_generic_type: ?[]const u8 = null;
     var first_generic_type_ptr: []const u8 = undefined;
     var first_generic_name: []const u8 = undefined;
@@ -921,7 +934,7 @@ fn writeCallback(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
         }
     }
     try nextLine(writer, indent + 1);
-    try writer.print("const cb_data: *{s}Data = @ptrCast(@alignCast({s}));", .{ func.zigName, first_generic_name });
+    try writer.print("const cb_data: *{s}Data(anyopaque) = @ptrCast(@alignCast({s}));", .{ func.zigName, first_generic_name });
 
     // const ret = cb_data.cb(
     try nextLine(writer, indent + 1);
@@ -1044,7 +1057,7 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
             try writer.print("const {s}: {s} = {s};", .{
                 try std.fmt.allocPrint(allocator, "{s}_sdl", .{arg.name}),
                 if (sdl_types.get(arg.type) != null) try std.fmt.allocPrint(allocator, "C.{s}", .{arg.type}) else arg.type,
-                try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types, indent + 1),
+                try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types),
             });
         }
     }
@@ -1058,8 +1071,8 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
     num_args = 0;
     for (func.arguments) |arg| {
 
-        // Skip generic. TODO: USE MODE?
-        if (std.mem.eql(u8, arg.type, "type") or generics.get(arg.type) != null or generics.get(arg.type[1..]) != null)
+        // Skip generic.
+        if (std.mem.eql(u8, arg.mode, "generic"))
             continue;
 
         try nextLine(writer, indent + 2);
@@ -1077,11 +1090,17 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
 
         // Convert name.
         else if (std.mem.eql(u8, arg.value, "null")) {
-            val = try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types, indent + 2);
+            val = try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types);
         }
 
         try writer.print("{s},", .{val});
         num_args += 1;
+
+        // Callback mode, pass data.
+        if (std.mem.eql(u8, arg.mode, "callback")) {
+            try nextLine(writer, indent + 2);
+            try writer.print("&{s},", .{arg.name});
+        }
     }
 
     // );
@@ -1172,7 +1191,7 @@ pub fn main() !void {
             try sdl_types.put(flag.type, SdlTypeData{ .Flag = flag });
         }
         for (subsystem.stringMap) |map| {
-            try sdl_types.put(map.name, SdlTypeData{ .StringMap = map });
+            try sdl_types.put(map.sdlName, SdlTypeData{ .StringMap = map });
         }
         for (subsystem.structs) |st| {
             try sdl_types.put(st.type, SdlTypeData{ .Struct = st });
@@ -1235,7 +1254,7 @@ pub fn main() !void {
         for (subsystem.stringMap) |map| {
             try writeMap(writer, map, 0);
             if (item_cnt == 0) {
-                single_name = map.name;
+                single_name = map.zigName;
             }
             item_cnt += 1;
         }

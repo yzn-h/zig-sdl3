@@ -12,6 +12,7 @@ For monitoring how close various subsystems are to completion.
 * GUID
 * Loadso
 * Locale
+* Pen
 * Time
 * Version
 
@@ -39,12 +40,10 @@ For monitoring how close various subsystems are to completion.
 * Metal
 * Mouse
 * Open GL (All variants)
-* Pen
 * Pixels
 * Power
 * Rect
 * Render
-* Revision
 * Scan Code
 * Sensor
 * Storage
@@ -68,6 +67,7 @@ For monitoring how close various subsystems are to completion.
 * Mutex (Zig has this already)
 * Old Names
 * Platform Defines (Build system flag probably)
+* Revision
 * Std Inc (Zig standard library)
 * Tests
 

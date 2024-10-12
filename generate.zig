@@ -199,7 +199,7 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
         return "[:0]const u8";
 
     // Optional string type.
-    if (std.mem.eql(u8, sdl, "?string"))
+    if (std.mem.eql(u8, sdl, "?string") or std.mem.eql(u8, sdl, "??string"))
         return "?[:0]const u8";
 
     // Zig string type.
@@ -262,7 +262,7 @@ fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: 
         return std.fmt.allocPrint(allocator, "{s}.ptr", .{val});
 
     // Optional string type.
-    if (std.mem.eql(u8, sdlType, "?string"))
+    if (std.mem.eql(u8, sdlType, "?string") or std.mem.eql(u8, sdlType, "??string"))
         return std.fmt.allocPrint(allocator, "if ({s}) |str_capture| str_capture.ptr else null", .{val});
 
     // Int, just cast it.
@@ -301,7 +301,7 @@ fn convertSdlValueToZig(allocator: std.mem.Allocator, val: []const u8, sdlType: 
         return std.fmt.allocPrint(allocator, "std.mem.span({s})", .{val});
 
     // Optional zig string, it may be null.
-    if (std.mem.eql(u8, sdlType, "?zigstring"))
+    if (std.mem.eql(u8, sdlType, "??string") or std.mem.eql(u8, sdlType, "?zigstring"))
         return std.fmt.allocPrint(allocator, "if ({s} == null) null else std.mem.span({s})", .{ val, val });
 
     // Bool, simple enough.

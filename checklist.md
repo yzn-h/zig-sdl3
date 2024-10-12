@@ -11,6 +11,7 @@ For monitoring how close various subsystems are to completion.
 * Clipboard
 * GUID
 * Loadso
+* Locale
 * Time
 * Version
 
@@ -33,7 +34,6 @@ For monitoring how close various subsystems are to completion.
 * Joystick
 * Keyboard
 * Keycode
-* Locale
 * Log
 * Main
 * Metal

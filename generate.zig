@@ -13,6 +13,7 @@ const Enum = struct {
     internalType: []const u8,
     comment: []const u8,
     values: []const ValueData,
+    functions: []const Function,
 };
 
 const Error = struct {
@@ -437,7 +438,7 @@ fn nextLine(writer: std.io.AnyWriter, indent: usize) !void {
     }
 }
 
-fn writeEnum(allocator: std.mem.Allocator, writer: std.io.AnyWriter, en: Enum, indent: usize) !void {
+fn writeEnum(allocator: std.mem.Allocator, writer: std.io.AnyWriter, en: Enum, indent: usize, sdl_types: std.StringHashMap(SdlTypeData)) !void {
 
     //
     // /// <comment>
@@ -461,6 +462,11 @@ fn writeEnum(allocator: std.mem.Allocator, writer: std.io.AnyWriter, en: Enum, i
         // Write value.
         try nextLine(writer, indent + 1);
         try writer.print("{s} = {s},", .{ val.zigValue, try std.mem.replaceOwned(u8, allocator, val.sdlValue, "$SDL", "C") });
+    }
+
+    // <function>
+    for (en.functions) |func| {
+        try writeFunction(allocator, writer, func, indent + 1, sdl_types);
     }
 
     // };
@@ -1224,7 +1230,7 @@ pub fn main() !void {
             try writeCallback(allocator, writer, cb, 0, sdl_types);
         }
         for (subsystem.enums) |en| {
-            try writeEnum(allocator, writer, en, 0);
+            try writeEnum(allocator, writer, en, 0, sdl_types);
             if (item_cnt == 0) {
                 single_name = en.zigType;
             }

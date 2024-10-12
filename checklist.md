@@ -13,6 +13,7 @@ For monitoring how close various subsystems are to completion.
 * Loadso
 * Locale
 * Pen
+* Power
 * Time
 * Version
 
@@ -41,7 +42,6 @@ For monitoring how close various subsystems are to completion.
 * Mouse
 * Open GL (All variants)
 * Pixels
-* Power
 * Rect
 * Render
 * Scan Code

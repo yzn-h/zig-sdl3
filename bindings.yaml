@@ -37,6 +37,7 @@ Subsystems:
           - ZigValue: OneMinusDstAlpha
             SdlValue: $SDL.SDL_BLENDFACTOR_ONE_MINUS_DST_ALPHA
             Comment: "(1-a, 1-a, 1-a, 1-a)"
+        Functions: []
       - SdlType: SDL_BlendOperation
         ZigType: Operation
         InternalType: c_uint
@@ -57,6 +58,7 @@ Subsystems:
           - ZigValue: Max
             SdlValue: $SDL.SDL_BLENDOPERATION_MAXIMUM
             Comment: "Max(Dst, Src)."
+        Functions: []
     Errors: []
     Values:
       - SdlName: SDL_BlendMode
@@ -569,6 +571,7 @@ Subsystems:
           - ZigValue: Override
             SdlValue: $SDL.SDL_HINT_OVERRIDE
             Comment: null
+        Functions: []
     Errors: []
     Values: []
     Flags: []
@@ -1211,6 +1214,7 @@ Subsystems:
           - ZigValue: TangentialPressure
             SdlValue: $SDL.SDL_PEN_AXIS_TANGENTIAL_PRESSURE
             Comment: "Pressure from squeezing the pen (barrel pressure)."
+        Functions: []
     Errors: []
     Values:
       - SdlName: SDL_PenID
@@ -1259,6 +1263,58 @@ Subsystems:
     Functions: []
     CustomFunctions: []
     Tests: []
+  - Name: power
+    Callbacks: []
+    Enums:
+      - SdlType: SDL_PowerState
+        ZigType: PowerState
+        InternalType: c_int
+        Comment: "The basic state for the system's power supply."
+        Values:
+          - ZigValue: Unknown
+            SdlValue: $SDL.SDL_POWERSTATE_UNKNOWN
+            Comment: "Can not determine power status."
+          - ZigValue: OnBattery
+            SdlValue: $SDL.SDL_POWERSTATE_ON_BATTERY
+            Comment: "Not plugged in, running on battery."
+          - ZigValue: NoBattery
+            SdlValue: $SDL.SDL_POWERSTATE_NO_BATTERY
+            Comment: "Plugged in, no battery available."
+          - ZigValue: Charging
+            SdlValue: $SDL.SDL_POWERSTATE_CHARGING
+            Comment: "Plugged in, battery charging."
+          - ZigValue: Charged
+            SdlValue: $SDL.SDL_POWERSTATE_CHARGED
+            Comment: "Plugged in, battery charged."
+        Functions:
+          - SdlName: SDL_GetPowerInfo
+            ZigName: get
+            Comment: "Get the current power supply details."
+            Return:
+              Sdl: SDL_PowerState
+              Zig: |
+                !struct { state: PowerState, seconds_left: ?u32, percent: ?u7 }
+              Convert: .{ .state = ret, .seconds_left = if (seconds_left == -1) null else @intCast(seconds_left), .percent = if (percent == -1) null else @intCast(percent) }
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: $SDL.SDL_POWERSTATE_ERROR
+            Arguments:
+              - Name: seconds_left
+                Type: c_int
+                Value: &seconds_left
+                Mode: out
+              - Name: percent
+                Type: c_int
+                Value: &percent
+                Mode: out
+    Errors: []
+    Values: []
+    Flags: []
+    StringMap: []
+    Structs: []
+    Functions: []
+    CustomFunctions: []
+    Tests: []
   - Name: properties
     Callbacks: []
     Enums:
@@ -1285,6 +1341,7 @@ Subsystems:
           - ZigValue: Boolean
             SdlValue: $SDL.SDL_PROPERTY_TYPE_BOOLEAN
             Comment: null
+        Functions: []
     Errors: []
     Values:
       SdlName: SDL_PropertiesID
@@ -1361,6 +1418,7 @@ Subsystems:
           - ZigValue: Saturday
             SdlValue: 6
             Comment: null
+        Functions: []
       - SdlType: SDL_Month
         ZigType: Month
         InternalType: c_int
@@ -1402,6 +1460,7 @@ Subsystems:
           - ZigValue: December
             SdlValue: 12
             Comment: null
+        Functions: []
       - SdlType: SDL_DateFormat
         ZigType: DateFormat
         InternalType: c_uint
@@ -1416,6 +1475,7 @@ Subsystems:
           - ZigValue: MonthDayYear
             SdlValue: $SDL.SDL_DATE_FORMAT_MMDDYYYY
             Comment: null
+        Functions: []
       - SdlType: SDL_TimeFormat
         ZigType: TimeFormat
         InternalType: c_uint
@@ -1427,6 +1487,7 @@ Subsystems:
           - ZigValue: TwelveHour
             SdlValue: $SDL.SDL_TIME_FORMAT_12HR
             Comment: null
+        Functions: []
     Errors: []
     Values:
       - SdlName: SDL_Time

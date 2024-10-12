@@ -1,5 +1,5 @@
 Subsystems:
-  - Name: blend
+  - Name: blend_mode
     Callbacks: []
     Enums:
       - SdlType: SDL_BlendFactor
@@ -101,21 +101,27 @@ Subsystems:
               - Name: srcRgb
                 Type: SDL_BlendFactor
                 Value: null
+                Mode: null
               - Name: dstRgb
                 Type: SDL_BlendFactor
                 Value: null
+                Mode: null
               - Name: rgbOp
                 Type: SDL_BlendOperation
                 Value: null
+                Mode: null
               - Name: srcAlpha
                 Type: SDL_BlendFactor
                 Value: null
+                Mode: null
               - Name: dstAlpha
                 Type: SDL_BlendFactor
                 Value: null
+                Mode: null
               - Name: alphaOp
                 Type: SDL_BlendOperation
                 Value: null
+                Mode: null
     Flags: []
     StringMap: []
     Structs: []
@@ -139,15 +145,19 @@ Subsystems:
 #          - Name: UserData
 #            Type: type
 #            Value: null
+#            Mode: null
 #          - Name: user_data
 #            Type: *UserData
 #            Value: null
+#            Mode: null
 #          - Name: mime_type
 #            Type: ?zigstring
 #            Value: null
+#            Mode: null
 #          - Name: size
 #            Type: *usize
 #            Value: *size
+#            Mode: null
 #      - SdlName: SDL_ClipboardCleanupCallback
 #        ZigName: CleanupCallback
 #        Comment: "Callback function that will be called when the clipboard is cleared, or new data is set."
@@ -160,9 +170,11 @@ Subsystems:
 #          - Name: UserData
 #            Type: type
 #            Value: null
+#            Mode: null
 #          - Name: user_data
 #            Type: *UserData
 #            Value: null
+#            Mode: null
     Enums: []
     Errors: []
     Values: []
@@ -184,6 +196,7 @@ Subsystems:
           - Name: text
             Type: string
             Value: null
+            Mode: null
       - SdlName: SDL_GetClipboardText
         ZigName: getText
         Comment: "Get UTF-8 text from the clipboard. Note that `sdl3.free` should be called on the return value."
@@ -218,6 +231,7 @@ Subsystems:
           - Name: text
             Type: string
             Value: null
+            Mode: null
       - SdlName: SDL_GetPrimarySelectionText
         ZigName: getPrimarySelectionText
         Comment: "Get UTF-8 text from the primary selection. Note that `sdl3.free` should be called on the return value."
@@ -252,21 +266,27 @@ Subsystems:
 #              - Name: UserData
 #                Type: type
 #                Value: null
+#                Mode: null
 #              - Name: callback
 #                Type: SDL_ClipboardDataCallback
 #                Value: null
+#                Mode: null
 #              - Name: cleanup
 #                Type: SDL_ClipboardCleanupCallback
 #                Value: null
+#                Mode: null
 #              - Name: user_data
 #                Type: *UserData
 #                Value: null
+#                Mode: null
 #              - Name: mime_types
 #                Type: "[]string"
 #                Value: null
+#                Mode: null
 #              - Name: num_mime_types
 #                Type: usize
 #                Value: mime_types.len
+#                Mode: null
       - SdlName: SDL_ClearClipboardData
         ZigName: clearData
         Comment: "Clear the clipboard data."
@@ -292,9 +312,11 @@ Subsystems:
           - Name: mime_type
             Type: string
             Value: null
+            Mode: null
           - Name: size
             Type: usize
             Value: &size
+            Mode: out
       - SdlName: SDL_HasClipboardData
         ZigName: hasData
         Comment: "Query whether there is data in the clipboard for the provided mime type."
@@ -307,6 +329,7 @@ Subsystems:
           - Name: mime_type
             Type: string
             Value: null
+            Mode: null
       - SdlName: SDL_GetClipboardMimeTypes
         ZigName: getMimeTypes
         Comment: "Retrieve the list of mime types available in the clipboard. Result needs to be freed with `sdl3.free`."
@@ -321,6 +344,7 @@ Subsystems:
           - Name: num_mime_types
             Type: usize
             Value: &num_mime_types
+            Mode: out
     CustomFunctions:
       - Code: |
           /// Create user data for the set clipboard data callback function.
@@ -398,11 +422,13 @@ Subsystems:
           Checks: []
         Arguments:
           - Name: fmt
-            Type: string
+            Type: null
             Value: ""%s""
+            Mode: null
           - Name: err
             Type: stringptr
             Value: null
+            Mode: null
       - SdlName: SDL_OutOfMemory
         ZigName: signalOutOfMemory
         Comment: "Set an error indicating that memory allocation failed."
@@ -445,6 +471,58 @@ Subsystems:
           try std.testing.expect(std.mem.eql(u8, get().?, "Hello world"));
           clear();
           try std.testing.expect(get() == null);;
+  - Name: guid
+    Callbacks: []
+    Enums: []
+    Errors: []
+    Values:
+      - SdlName: SDL_GUID
+        ZigName: GUID
+        Type: $SDL.SDL_GUID
+        IsOpaque: false
+        Comment: "A 128-bit identifier for an input device that identifies that device across runs of SDL programs on the same platform."
+        Presets: []
+        Functions:
+          - SdlName: SDL_GUIDToString
+            ZigName: toString
+            Comment: "Get an ASCII string representation for a given SDL_GUID. Returned memory must be freed."
+            Return:
+              Sdl: void
+              Zig: void
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_GUID
+                Value: null
+                Mode: null
+              - Name: str
+                Type: "[32:0]u8"
+                Value: str.ptr
+                Mode: verbatim
+              - Name: buf_len
+                Type: null
+                Value: "@intCast(str.len)"
+                Mode: null
+          - SdlName: SDL_StringToGUID
+            ZigName: fromString
+            Comment: "Convert a GUID string into a SDL_GUID structure. TODO: Determine if this copies properly!"
+            Return:
+              Sdl: SDL_GUID
+              Zig: GUID
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: buf
+                Type: string
+                Value: null
+                Mode: null
+    Flags: []
+    StringMap: []
+    Structs: []
+    Functions: []
+    CustomFunctions: []
+    Tests: []
   - Name: init
     Callbacks: []
     Enums: []
@@ -548,6 +626,7 @@ Subsystems:
           - Name: flags
             Type: SDL_InitFlags
             Value: null
+            Mode: null
       - SdlName: SDL_QuitSubSystem
         ZigName: quit
         Comment: "Quit SDL systems. Note that shutdown is still needed after all systems have been quit."
@@ -560,6 +639,7 @@ Subsystems:
           - Name: flags
             Type: SDL_InitFlags
             Value: null
+            Mode: null
       - SdlName: SDL_Quit
         ZigName: shutdown
         Comment: "Shutdown SDL. This is needed. Each system is ref-counted so init and quit each one, then call this."
@@ -581,6 +661,7 @@ Subsystems:
           - Name: flags
             Type: SDL_InitFlags
             Value: null
+            Mode: null
       - SdlName: SDL_SetAppMetadata
         ZigName: setAppMetadata
         Comment: "Get which given systems have been initialized."
@@ -595,12 +676,15 @@ Subsystems:
           - Name: app_name
             Type: "?string"
             Value: null
+            Mode: null
           - Name: app_version
             Type: "?string"
             Value: null
+            Mode: null
           - Name: app_identifier
             Type: "?string"
             Value: null
+            Mode: null
       - SdlName: SDL_SetAppMetadataProperty
         ZigName: setAppMetadataProperty
         Comment: "Set a metadata property for the app. Note that the value can be null to clear it."
@@ -615,9 +699,11 @@ Subsystems:
           - Name: property
             Type: AppMetadataProperty
             Value: null
+            Mode: null
           - Name: value
             Type: "?string"
             Value: null
+            Mode: null
       - SdlName: SDL_GetAppMetadataProperty
         ZigName: getAppMetadataProperty
         Comment: "Get a metadata property for the app."
@@ -632,6 +718,7 @@ Subsystems:
           - Name: property
             Type: AppMetadataProperty
             Value: null
+            Mode: null
     CustomFunctions: []
     Tests:
       - Name: Init
@@ -681,6 +768,7 @@ Subsystems:
               - Name: name
                 Type: string
                 Value: null
+                Mode: null
           - SdlName: SDL_LoadFunction
             ZigName: loadFunction
             Comment: "Get a function pointer to an exported function in the object file. Result may be null."
@@ -693,9 +781,11 @@ Subsystems:
               - Name: self
                 Type: SDL_SharedObject
                 Value: null
+                Mode: null
               - Name: name
                 Type: string
                 Value: null
+                Mode: null
           - SdlName: SDL_UnloadObject
             ZigName: unload
             Comment: Unload the shared object.
@@ -708,6 +798,7 @@ Subsystems:
               - Name: self
                 Type: SDL_SharedObject
                 Value: null
+                Mode: null
     Flags: []
     StringMap: []
     Structs: []
@@ -837,6 +928,7 @@ Subsystems:
           - Name: url
             Type: string
             Value: null
+            Mode: null
     CustomFunctions: []
     Tests: []
   - Name: properties
@@ -888,9 +980,11 @@ Subsystems:
               - Name: self
                 Type: SDL_PropertiesID
                 Value: null
+                Mode: null
               - Name: dest
                 Type: SDL_PropertiesID
                 Value: null
+                Mode: null
           - SdlName: SDL_DestroyProperties
             ZigName: deinit
             Comment: "Destroy the group of properties."
@@ -903,6 +997,7 @@ Subsystems:
               - Name: self
                 Type: SDL_PropertiesID
                 Value: null
+                Mode: null
     Flags: []
     StringMap: []
     Structs: []
@@ -1027,6 +1122,7 @@ Subsystems:
               - Name: time
                 Type: SDL_Time
                 Value: &time
+                Mode: out
           - SdlName: SDL_GetDateTimeLocalePreferences
             ZigName: getLocalePreferences
             Comment: "Gets the current preferred date and time format for the system locale. This is a *slow* call and should only be used once ideally."
@@ -1042,12 +1138,15 @@ Subsystems:
               - Name: self
                 Type: SDL_Time
                 Value: null
+                Mode: null
               - Name: dateFormat
                 Type: SDL_DateFormat
                 Value: &dateFormat
+                Mode: out
               - Name: timeFormat
                 Type: SDL_TimeFormat
                 Value: &timeFormat
+                Mode: out
           - SdlName: SDL_DateTimeToTime
             ZigName: fromDateTime
             Comment: "Converts a calendar time to an SDL_Time in nanoseconds since the epoch."
@@ -1060,11 +1159,13 @@ Subsystems:
                   ComparisonVal: false
             Arguments:
               - Name: date_time
-                Type: *const SDL_DateTime
+                Type: SDL_DateTime
                 Value: null
+                Mode: convertSdlConst
               - Name: time
                 Type: SDL_Time
                 Value: &time
+                Mode: out
           - SdlName: SDL_TimeToWindows
             ZigName: toWindows
             Comment: "Converts an SDL time to a windows FILETIME."
@@ -1078,12 +1179,15 @@ Subsystems:
               - Name: self
                 Type: SDL_Time
                 Value: null
+                Mode: null
               - Name: lowDateTime
                 Type: u32
                 Value: &lowDateTime
+                Mode: out
               - Name: highDateTime
                 Type: u32
                 Value: &highDateTime
+                Mode: out
           - SdlName: SDL_TimeFromWindows
             ZigName: fromWindows
             Comment: "Converts a windows FILETIME to an SDL time."
@@ -1096,9 +1200,11 @@ Subsystems:
               - Name: lowDateTime
                 Type: u32
                 Value: null
+                Mode: null
               - Name: highDateTime
                 Type: u32
                 Value: null
+                Mode: null
     Flags: []
     StringMap: []
     Structs:
@@ -1166,12 +1272,15 @@ Subsystems:
               - Name: time
                 Type: SDL_Time
                 Value: null
+                Mode: null
               - Name: date_time
                 Type: SDL_DateTime
                 Value: &date_time
+                Mode: out
               - Name: local_instead_of_utc
                 Type: bool
                 Value: null
+                Mode: null
         CustomFunctions: []
     Functions:
       - SdlName: SDL_GetDaysInMonth
@@ -1188,9 +1297,11 @@ Subsystems:
           - Name: year
             Type: u31
             Value: null
+            Mode: null
           - Name: month
             Type: SDL_Month
             Value: null
+            Mode: null
       - SdlName: SDL_GetDayOfYear
         ZigName: getDayOfYear
         Comment: "Get the day of a given year with value [0-365]."
@@ -1205,12 +1316,15 @@ Subsystems:
           - Name: year
             Type: u31
             Value: null
+            Mode: null
           - Name: month
             Type: SDL_Month
             Value: null
+            Mode: null
           - Name: day
             Type: u5
             Value: null
+            Mode: null
       - SdlName: SDL_GetDayOfWeek
         ZigName: getDayOfWeek
         Comment: "Get the day of a given week."
@@ -1225,12 +1339,15 @@ Subsystems:
           - Name: year
             Type: u31
             Value: null
+            Mode: null
           - Name: month
             Type: SDL_Month
             Value: null
+            Mode: null
           - Name: day
             Type: u5
             Value: null
+            Mode: null
     CustomFunctions: []
     Tests:
       - Name: Dates
@@ -1276,12 +1393,15 @@ Subsystems:
               - Name: major
                 Type: u32
                 Value: null
+                Mode: null
               - Name: minor
                 Type: u32
                 Value: null
+                Mode: null
               - Name: micro
                 Type: u32
                 Value: null
+                Mode: null
           - SdlName: SDL_VERSIONNUM_MAJOR
             ZigName: getMajor
             Comment: "Major version number."
@@ -1294,6 +1414,7 @@ Subsystems:
               - Name: self
                 Type: SDL_Version
                 Value: null
+                Mode: null
           - SdlName: SDL_VERSIONNUM_MINOR
             ZigName: getMinor
             Comment: "Minor version number."
@@ -1306,6 +1427,7 @@ Subsystems:
               - Name: self
                 Type: SDL_Version
                 Value: null
+                Mode: null
           - SdlName: SDL_VERSIONNUM_MICRO
             ZigName: getMicro
             Comment: "Micro version number."
@@ -1318,6 +1440,7 @@ Subsystems:
               - Name: self
                 Type: SDL_Version
                 Value: null
+                Mode: null
           - SdlName: SDL_VERSION_ATLEAST
             ZigName: atLeast
             Comment: "Check if the SDL version is at least greater than the given one."
@@ -1330,12 +1453,15 @@ Subsystems:
               - Name: major
                 Type: u32
                 Value: null
+                Mode: null
               - Name: minor
                 Type: u32
                 Value: null
+                Mode: null
               - Name: micro
                 Type: u32
                 Value: null
+                Mode: null
           - SdlName: SDL_GetVersion
             ZigName: get
             Comment: "Get the version of SDL that is linked against your program. Possibly different than the compiled against version."

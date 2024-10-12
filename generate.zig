@@ -38,6 +38,7 @@ const Function = struct {
         name: []const u8,
         type: []const u8,
         value: []const u8,
+        mode: []const u8,
     },
 };
 
@@ -200,6 +201,10 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
     if (std.mem.eql(u8, sdl, "?zigstring"))
         return "?[]const u8";
 
+    // Allocator.
+    if (std.mem.eql(u8, sdl, "std.mem.Allocator"))
+        return sdl;
+
     // Int.
     if (std.mem.eql(u8, sdl, "int"))
         return "i32";
@@ -208,7 +213,7 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
     if (std.mem.eql(u8, sdl, "u5") or std.mem.eql(u8, sdl, "u6") or std.mem.eql(u8, sdl, "u8") or std.mem.eql(u8, sdl, "u31") or std.mem.eql(u8, sdl, "u32") or std.mem.eql(u8, sdl, "usize"))
         return sdl;
 
-    // Type.
+    // Bool.
     if (std.mem.eql(u8, sdl, "bool"))
         return "bool";
 
@@ -995,13 +1000,11 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
     var generics = std.StringHashMap(void).init(allocator);
     var num_args: usize = 0;
     for (func.arguments) |arg| {
-        if (std.mem.startsWith(u8, arg.type, "*const ")) {
+        if (!std.mem.eql(u8, arg.type, "null") and !std.mem.eql(u8, arg.mode, "out")) {
             try nextLine(writer, indent + 1);
-            try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToZigType(allocator, arg.type[7..], sdl_types, generics, false) });
-            num_args += 1;
-        } else if (std.mem.eql(u8, arg.value, "null")) {
-            try nextLine(writer, indent + 1);
-            try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToZigType(allocator, arg.type, sdl_types, generics, false) });
+            if (std.mem.eql(u8, arg.mode, "verbatim")) {
+                try writer.print("{s}: {s},", .{ arg.name, arg.type });
+            } else try writer.print("{s}: {s},", .{ arg.name, try sdlTypeToZigType(allocator, arg.type, sdl_types, generics, false) });
             num_args += 1;
         }
         if (std.mem.eql(u8, arg.type, "type")) {
@@ -1016,23 +1019,32 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
     try writer.print(") {s} {{", .{func.ret.zig});
 
     // var <argName>: <argType> = undefined;
+    // const <argName>_sdl: <argType> = <convert(<argName>)>;
+    // const <argName>_buf = try <argName>.<argValue>;
     for (func.arguments) |arg| {
-        if (arg.value[0] == '&') {
+
+        // Pointer is written to.
+        if (std.mem.eql(u8, arg.mode, "out")) {
             try nextLine(writer, indent + 1);
             try writer.print("var {s}: {s} = undefined;", .{
                 arg.name,
                 if (sdl_types.get(arg.type) != null) try std.fmt.allocPrint(allocator, "C.{s}", .{arg.type}) else arg.type,
             });
         }
-        const const_ptr = "*const ";
-        const const_ptr_len = const_ptr.len;
-        if (std.mem.startsWith(u8, arg.type, const_ptr)) {
-            const real_type = arg.type[const_ptr_len..];
+
+        // Allocate a buffer.
+        else if (std.mem.eql(u8, arg.mode, "allocator")) {
+            try nextLine(writer, indent + 1);
+            try writer.print("const {s}_buf = try {s}.{s};", .{ arg.name, arg.name, arg.value });
+        }
+
+        // Constant pointer.
+        if (std.mem.eql(u8, arg.mode, "convertSdlConst")) {
             try nextLine(writer, indent + 1);
             try writer.print("const {s}: {s} = {s};", .{
                 try std.fmt.allocPrint(allocator, "{s}_sdl", .{arg.name}),
-                if (sdl_types.get(real_type) != null) try std.fmt.allocPrint(allocator, "C.{s}", .{real_type}) else real_type,
-                try convertZigValueToSdl(allocator, arg.name, real_type, sdl_types, indent + 1),
+                if (sdl_types.get(arg.type) != null) try std.fmt.allocPrint(allocator, "C.{s}", .{arg.type}) else arg.type,
+                try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types, indent + 1),
             });
         }
     }
@@ -1045,14 +1057,29 @@ fn writeFunction(allocator: std.mem.Allocator, writer: std.io.AnyWriter, func: F
     // <argValue>,
     num_args = 0;
     for (func.arguments) |arg| {
+
+        // Skip generic. TODO: USE MODE?
         if (std.mem.eql(u8, arg.type, "type") or generics.get(arg.type) != null or generics.get(arg.type[1..]) != null)
             continue;
+
         try nextLine(writer, indent + 2);
         var val = arg.value;
-        if (std.mem.startsWith(u8, arg.type, "*const ")) {
+
+        // Convert constant.
+        if (std.mem.eql(u8, arg.mode, "convertSdlConst")) {
             val = try std.fmt.allocPrint(allocator, "&{s}_sdl", .{arg.name});
-        } else if (std.mem.eql(u8, arg.value, "null"))
+        }
+
+        // Allocator mode.
+        else if (std.mem.eql(u8, arg.mode, "allocator")) {
+            val = try std.fmt.allocPrint(allocator, "{s}_buf.ptr", .{arg.name});
+        }
+
+        // Convert name.
+        else if (std.mem.eql(u8, arg.value, "null")) {
             val = try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types, indent + 2);
+        }
+
         try writer.print("{s},", .{val});
         num_args += 1;
     }

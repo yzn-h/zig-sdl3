@@ -7,8 +7,9 @@ For monitoring how close various subsystems are to completion.
 * Misc
 
 ## Needs Testing
-* Blend
+* Blend Mode
 * Clipboard
+* GUID
 * Loadso
 * Time
 * Version
@@ -25,7 +26,6 @@ For monitoring how close various subsystems are to completion.
 * Events
 * Gamepad
 * GPU
-* GUID
 * Haptic
 * HID
 * Hints

@@ -45,19 +45,19 @@ pub const Operation = enum(c_uint) {
 pub const Mode = struct {
 	value: C.SDL_BlendMode,
 	/// Dst = Src.
-	pub const None = Mode{ .value = C.SDL_BLENDMODE_NONE };
+	pub const none = Mode{ .value = C.SDL_BLENDMODE_NONE };
 	/// DstRGB = (SrcRGB * SrcA) + (DstRGB * (1-SrcA)), DstA = SrcA + (DstA * (1-SrcA)).
-	pub const Blend = Mode{ .value = C.SDL_BLENDMODE_BLEND };
+	pub const blend = Mode{ .value = C.SDL_BLENDMODE_BLEND };
 	/// DstRGBA = SrcRGBA + (DstRGBA * (1-SrcA)).
-	pub const BlendPremultiplied = Mode{ .value = C.SDL_BLENDMODE_BLEND_PREMULTIPLIED };
+	pub const blend_premultiplied = Mode{ .value = C.SDL_BLENDMODE_BLEND_PREMULTIPLIED };
 	/// DstRGB = (SrcRGB * SrcA) + DstRGB, DstA = DstA.
-	pub const Add = Mode{ .value = C.SDL_BLENDMODE_ADD };
+	pub const add = Mode{ .value = C.SDL_BLENDMODE_ADD };
 	/// DstRGB = SrcRGB + DstRGB, DstA = DstA.
-	pub const AddPremultiplied = Mode{ .value = C.SDL_BLENDMODE_ADD_PREMULTIPLIED };
+	pub const add_premultiplied = Mode{ .value = C.SDL_BLENDMODE_ADD_PREMULTIPLIED };
 	/// DstRGB = SrcRGB * DstRGB, DstA = DstA.
-	pub const Mod = Mode{ .value = C.SDL_BLENDMODE_MOD };
+	pub const mod = Mode{ .value = C.SDL_BLENDMODE_MOD };
 	/// DstRGB = (SrcRGB * DstRGB) + (DstRGB * (1-SrcA)), DstA = DstA.
-	pub const Mul = Mode{ .value = C.SDL_BLENDMODE_MUL };
+	pub const mul = Mode{ .value = C.SDL_BLENDMODE_MUL };
 
 	/// Create a custom blend mode. The source is the pixels we are writing to the destination render target.
 	pub fn custom(

@@ -7,13 +7,13 @@ For monitoring how close various subsystems are to completion.
 * Misc
 
 ## Needs Testing
+* Blend
 * Clipboard
 * Loadso
 * Time
 * Version
 
 ## In Progress
-* Blend
 * Message Box
 * Properties
 

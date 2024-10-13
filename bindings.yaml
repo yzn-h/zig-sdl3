@@ -2502,6 +2502,20 @@ Subsystems:
     CustomFunctions: []
     Tests: []
 Files:
+  - Name: rect
+    Exports:
+      - SdlName: SDL_FPoint
+        ZigName: FPoint
+        Kind: struct
+      - SdlName: SDL_Point
+        ZigName: IPoint
+        Kind: struct
+      - SdlName: SDL_FRect
+        ZigName: FRect
+        Kind: struct
+      - SdlName: SDL_Rect
+        ZigName: IRect
+        Kind: struct
   - Name: io_stream
     Exports:
       - SdlName: SDL_IOStream

@@ -15,6 +15,7 @@ pub const properties = @import("properties.zig");
 pub const time = @import("time.zig");
 pub const Version = @import("version.zig").Version;
 
+pub const rect = @import("rect.zig");
 pub const Stream = @import("io_stream.zig").Stream;
 
 pub const C = @import("c.zig").C;

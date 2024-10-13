@@ -9,6 +9,7 @@ pub const Locale = @import("locale.zig").Locale;
 pub const message_box = @import("message_box.zig");
 pub const openURL = @import("misc.zig").openURL;
 pub const pen = @import("pen.zig");
+pub const pixels = @import("pixels.zig");
 pub const PowerState = @import("power.zig").PowerState;
 pub const properties = @import("properties.zig");
 pub const time = @import("time.zig");

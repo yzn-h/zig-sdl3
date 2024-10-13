@@ -20,6 +20,7 @@ For monitoring how close various subsystems are to completion.
 ## In Progress
 * Hints
 * Message Box
+* Pixels
 * Properties
 
 ## Not Started
@@ -41,7 +42,6 @@ For monitoring how close various subsystems are to completion.
 * Metal
 * Mouse
 * Open GL (All variants)
-* Pixels
 * Rect
 * Render
 * Scan Code

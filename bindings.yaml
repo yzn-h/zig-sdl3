@@ -1263,6 +1263,426 @@ Subsystems:
     Functions: []
     CustomFunctions: []
     Tests: []
+  - Name: pixels
+    Callbacks: []
+    Enums:
+      - SdlType: SDL_PixelType
+        ZigType: Type
+        InternalType: c_uint
+        Comment: "Pixel type."
+        Values:
+          - ZigValue: Index1
+            SdlValue: $SDL.SDL_PIXELTYPE_INDEX1
+            Comment: null
+          - ZigValue: Index2
+            SdlValue: $SDL.SDL_PIXELTYPE_INDEX2
+            Comment: null
+          - ZigValue: Index4
+            SdlValue: $SDL.SDL_PIXELTYPE_INDEX4
+            Comment: null
+          - ZigValue: Index8
+            SdlValue: $SDL.SDL_PIXELTYPE_INDEX8
+            Comment: null
+          - ZigValue: Packed8
+            SdlValue: $SDL.SDL_PIXELTYPE_PACKED8
+            Comment: null
+          - ZigValue: Packed16
+            SdlValue: $SDL.SDL_PIXELTYPE_PACKED16
+            Comment: null
+          - ZigValue: Packed32
+            SdlValue: $SDL.SDL_PIXELTYPE_PACKED32
+            Comment: null
+          - ZigValue: ArrayU8
+            SdlValue: $SDL.SDL_PIXELTYPE_ARRAYU8
+            Comment: null
+          - ZigValue: ArrayU16
+            SdlValue: $SDL.SDL_PIXELTYPE_ARRAYU16
+            Comment: null
+          - ZigValue: ArrayU32
+            SdlValue: $SDL.SDL_PIXELTYPE_ARRAYU32
+            Comment: null
+          - ZigValue: ArrayF16
+            SdlValue: $SDL.SDL_PIXELTYPE_ARRAYF16
+            Comment: null
+          - ZigValue: ArrayF32
+            SdlValue: $SDL.SDL_PIXELTYPE_ARRAYF32
+            Comment: null
+        Functions: []
+      - SdlType: SDL_BitmapOrder
+        ZigType: IndexOrder
+        InternalType: c_uint
+        Comment: "Bitmap pixel order, high bit -> low bit."
+        Values:
+          - ZigValue: None
+            SdlValue: $SDL.SDL_BITMAPORDER_NONE
+            Comment: null
+          - ZigValue: HighToLow
+            SdlValue: $SDL.SDL_BITMAPORDER_4321
+            Comment: null
+          - ZigValue: LowToHigh
+            SdlValue: $SDL.SDL_BITMAPORDER_1234
+            Comment: null
+        Functions: []
+      - SdlType: SDL_PackedOrder
+        ZigType: PackedOrder
+        InternalType: c_uint
+        Comment: "Packed component order, high bit -> low bit."
+        Values:
+          - ZigValue: None
+            SdlValue: $SDL.SDL_PACKEDORDER_NONE
+            Comment: null
+          - ZigValue: Xrgb
+            SdlValue: $SDL.SDL_PACKEDORDER_XRGB
+            Comment: null
+          - ZigValue: Rgbx
+            SdlValue: $SDL.SDL_PACKEDORDER_RGBX
+            Comment: null
+          - ZigValue: Argb
+            SdlValue: $SDL.SDL_PACKEDORDER_ARGB
+            Comment: null
+          - ZigValue: Rgba
+            SdlValue: $SDL.SDL_PACKEDORDER_RGBA
+            Comment: null
+          - ZigValue: Xbgr
+            SdlValue: $SDL.SDL_PACKEDORDER_XBGR
+            Comment: null
+          - ZigValue: Bgrx
+            SdlValue: $SDL.SDL_PACKEDORDER_BGRX
+            Comment: null
+          - ZigValue: Abgr
+            SdlValue: $SDL.SDL_PACKEDORDER_ABGR
+            Comment: null
+          - ZigValue: Bgra
+            SdlValue: $SDL.SDL_PACKEDORDER_BGRA
+            Comment: null
+        Functions: []
+      - SdlType: SDL_ArrayOrder
+        ZigType: ArrayOrder
+        InternalType: c_uint
+        Comment: "Array component order, low byte -> high byte."
+        Values:
+          - ZigValue: None
+            SdlValue: $SDL.SDL_ARRAYORDER_NONE
+            Comment: null
+          - ZigValue: Rgb
+            SdlValue: $SDL.SDL_ARRAYORDER_RGB
+            Comment: null
+          - ZigValue: Rgba
+            SdlValue: $SDL.SDL_ARRAYORDER_RGBA
+            Comment: null
+          - ZigValue: Argb
+            SdlValue: $SDL.SDL_ARRAYORDER_ARGB
+            Comment: null
+          - ZigValue: Bgr
+            SdlValue: $SDL.SDL_ARRAYORDER_BGR
+            Comment: null
+          - ZigValue: Bgra
+            SdlValue: $SDL.SDL_ARRAYORDER_BGRA
+            Comment: null
+          - ZigValue: Abgr
+            SdlValue: $SDL.SDL_ARRAYORDER_ABGR
+            Comment: null
+        Functions: []
+      - SdlType: SDL_PackedLayout
+        ZigType: Layout
+        InternalType: c_uint
+        Comment: "Packed component layout."
+        Values:
+          - ZigValue: None
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_NONE
+            Comment: null
+          - ZigValue: Bit_3_3_2
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_332
+            Comment: null
+          - ZigValue: Bit_4_4_4_4
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_4444
+            Comment: null
+          - ZigValue: Bit_1_5_5_5
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_1555
+            Comment: null
+          - ZigValue: Bit_5_5_5_1
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_5551
+            Comment: null
+          - ZigValue: Bit_5_6_5
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_565
+            Comment: null
+          - ZigValue: Bit_8_8_8_8
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_8888
+            Comment: null
+          - ZigValue: Bit_2_10_10_10
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_2101010
+            Comment: null
+          - ZigValue: Bit_10_10_10_2
+            SdlValue: $SDL.SDL_PACKEDLAYOUT_1010102
+            Comment: null
+        Functions: []
+    Errors: []
+    Values:
+      - SdlName: SDL_PixelFormat
+        ZigName: Format
+        Type: c_uint
+        IsOpaque: false
+        Comment: "Pixel format."
+        Presets:
+          - ZigValue: Index1Lsb
+            SdlValue: $SDL.SDL_PIXELFORMAT_INDEX1LSB
+            Comment: null
+# TODO: REST OF FORMATS!!!
+        Functions:
+          - SdlName: SDL_DEFINE_PIXELFOURCC
+            ZigName: define4CC
+            Comment: |
+              Define a format using 4 characters (Ex: YV12).
+            Return:
+              Sdl: SDL_PixelFormat
+              Zig: Format
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: a
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: b
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: c
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: d
+                Type: u8
+                Value: null
+                Mode: null
+          - SdlName: SDL_DEFINE_PIXELFORMAT
+            ZigName: define
+            Comment: "Define a pixel format."
+            Return:
+              Sdl: SDL_PixelFormat
+              Zig: Format
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: pixel_type
+                Type: SDL_PixelType
+                Value: null
+                Mode: null
+              - Name: order
+                Type: OrderType(pixel_type)
+                Value: "@intFromEnum(order)"
+                Mode: verbatim
+              - Name: layout
+                Type: SDL_PackedLayout
+                Value: null
+                Mode: null
+              - Name: bits
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: bytes
+                Type: u8
+                Value: null
+                Mode: null
+          - SdlName: SDL_PIXELFLAG
+            ZigName: getFlag
+            Comment: "If format was created by `define` rather than `define4CC`."
+            Return:
+              Sdl: int
+              Zig: bool
+              Convert: ret != 0
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_PIXELTYPE
+            ZigName: getType
+            Comment: "Get the type component of the format."
+            Return:
+              Sdl: SDL_PixelType
+              Zig: ?Type
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_PIXELTYPE_UNKNOWN
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_PIXELORDER
+            ZigName: getOrder
+            Comment: "Get the order component of the format."
+            Return:
+              Sdl: int
+              Zig: c_int
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_PIXELORDER
+            ZigName: getOrderTyped
+            Comment: "Get the typed order component of the format. Do not run this on formats with an invalid type!"
+            Return:
+              Sdl: int
+              Zig: OrderType(self.getType().?)
+              Convert: "@enumFromInt(ret)"
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_PACKEDLAYOUT
+            ZigName: getLayout
+            Comment: "Get the layout component of the format."
+            Return:
+              Sdl: SDL_PackedLayout
+              Zig: Layout
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_BITSPERPIXEL
+            ZigName: getBitsPerPixel
+            Comment: "Get the bits per pixel of the format."
+            Return:
+              Sdl: u8
+              Zig: u8
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_BYTESPERPIXEL
+            ZigName: getBytesPerPixel
+            Comment: "Get the bytes per pixel of the format."
+            Return:
+              Sdl: u8
+              Zig: u8
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISPIXELFORMAT_INDEXED
+            ZigName: isIndexed
+            Comment: "If the format is indexed."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISPIXELFORMAT_PACKED
+            ZigName: isPacked
+            Comment: "If the format is packed."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISPIXELFORMAT_ARRAY
+            ZigName: isArray
+            Comment: "If the format is array."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISPIXELFORMAT_ALPHA
+            ZigName: hasAlpha
+            Comment: "If the format has alpha."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISPIXELFORMAT_10BIT
+            ZigName: is10Bit
+            Comment: "If the format is 10-bit."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISPIXELFORMAT_FLOAT
+            ZigName: isFloat
+            Comment: "If the format is floating point."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISPIXELFORMAT_FOURCC
+            ZigName: is4CC
+            Comment: "If the format is 4CC."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+    Flags: []
+    StringMap: []
+    Structs: []
+    Functions: []
+    CustomFunctions:
+      - Code: |
+          /// Get the order type of a pixel type.
+          fn OrderType(pixel_type: Type) type {
+              return switch (pixel_type) {
+                  .Index1, .Index2, .Index4, .Index8 => IndexOrder,
+                  .Packed8, .Packed16, .Packed32 => PackedOrder,
+                  .ArrayU8, .ArrayU16, .ArrayU32, .ArrayF16, .ArrayF32 => ArrayOrder,
+              };
+          }
+    Tests: []
   - Name: power
     Callbacks: []
     Enums:
@@ -1323,9 +1743,6 @@ Subsystems:
         InternalType: c_uint
         Comment: "Properties type enum."
         Values:
-          - ZigValue: Invalid
-            SdlValue: $SDL.SDL_PROPERTY_TYPE_INVALID
-            Comment: null
           - ZigValue: Pointer
             SdlValue: $SDL.SDL_PROPERTY_TYPE_POINTER
             Comment: null
@@ -1351,6 +1768,28 @@ Subsystems:
       Comment: "SDL properties group. Properties can be added or removed at runtime."
       Presets: []
       Functions:
+          - SdlName: SDL_GetGlobalProperties
+            ZigName: getGlobal
+            Comment: "Get the global SDL properties."
+            Return:
+              Sdl: SDL_PropertiesID
+              Zig: !Group
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: 0
+            Arguments: []
+          - SdlName: SDL_CreateProperties
+            ZigName: init
+            Comment: "Create a group of properties."
+            Return:
+              Sdl: SDL_PropertiesID
+              Zig: !Group
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: 0
+            Arguments: []
           - SdlName: SDL_CopyProperties
             ZigName: copyTo
             Comment: "Copy and replace all properties in destination with ones in this one. Will not copy properties that require cleanup."
@@ -1368,6 +1807,191 @@ Subsystems:
                 Mode: null
               - Name: dest
                 Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+          - SdlName: SDL_LockProperties
+            ZigName: lock
+            Comment: "Lock a group of properties."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+          - SdlName: SDL_UnlockProperties
+            ZigName: unlock
+            Comment: "Unlock a group of properties."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetPointerPropertyWithCleanup
+            ZigName: setPointerPropertyWithCleanup
+            Comment: "Set a pointer property in a group of properties with a cleanup function that is called when the property is deleted."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+              - Name: ValueType
+                Type: type
+                Value: null
+                Mode: generic
+              - Name: UserData
+                Type: type
+                Value: null
+                Mode: generic
+              - Name: name
+                Type: string
+                Value: null
+                Mode: null
+              - Name: value
+                Type: ?*ValueType
+                Value: null
+                Mode: null
+              - Name: cb
+                Type: |
+                  ?*const fn (user_data: *UserData, value: *ValueType) callconv(.C) void
+                Value: if (cb) |val| @ptrCast(val) else null
+                Mode: verbatim
+              - Name: user_data
+                Type: *UserData
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetPointerProperty
+            ZigName: setPointer
+            Comment: "Set a pointer value property, null for the value will delete it."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+              Arguments:
+              - Name: self
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+              - Name: name
+                Type: string
+                Value: null
+                Mode: null
+              - Name: value
+                Type: *void
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetStringProperty
+            ZigName: setString
+            Comment: "Set a string value property, null for the value will delete it."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+              Arguments:
+              - Name: self
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+              - Name: name
+                Type: string
+                Value: null
+                Mode: null
+              - Name: value
+                Type: string
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetNumberProperty
+            ZigName: setNumber
+            Comment: "Set a number value property, null for the value will delete it."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+              Arguments:
+              - Name: self
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+              - Name: name
+                Type: string
+                Value: null
+                Mode: null
+              - Name: value
+                Type: i64
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetFloatProperty
+            ZigName: setFloat
+            Comment: "Set a float value property, null for the value will delete it."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+              Arguments:
+              - Name: self
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+              - Name: name
+                Type: string
+                Value: null
+                Mode: null
+              - Name: value
+                Type: f32
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetBooleanProperty
+            ZigName: setBoolean
+            Comment: "Set a boolean value property, null for the value will delete it."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+              Arguments:
+              - Name: self
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+              - Name: name
+                Type: string
+                Value: null
+                Mode: null
+              - Name: value
+                Type: bool
                 Value: null
                 Mode: null
           - SdlName: SDL_DestroyProperties

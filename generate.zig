@@ -215,12 +215,16 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
     if (std.mem.eql(u8, sdl, "std.mem.Allocator"))
         return sdl;
 
+    // Void.
+    if (std.mem.eql(u8, sdl, "*void"))
+        return "*?anyopaque";
+
     // Int.
     if (std.mem.eql(u8, sdl, "int"))
         return "i32";
 
     // Zig int.
-    if (std.mem.eql(u8, sdl, "u5") or std.mem.eql(u8, sdl, "u6") or std.mem.eql(u8, sdl, "u8") or std.mem.eql(u8, sdl, "u31") or std.mem.eql(u8, sdl, "u32") or std.mem.eql(u8, sdl, "usize"))
+    if (std.mem.eql(u8, sdl, "f32") or std.mem.eql(u8, sdl, "i64") or std.mem.eql(u8, sdl, "u5") or std.mem.eql(u8, sdl, "u6") or std.mem.eql(u8, sdl, "u8") or std.mem.eql(u8, sdl, "u31") or std.mem.eql(u8, sdl, "u32") or std.mem.eql(u8, sdl, "usize"))
         return sdl;
 
     // Bool.
@@ -232,7 +236,7 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
         return "type";
 
     // Generics.
-    if (generics.get(sdl) != null or generics.get(sdl[1..]) != null)
+    if (generics.get(sdl) != null or generics.get(sdl[1..]) != null or generics.get(sdl[2..]) != null)
         return if (generics_opaque) "?*anyopaque" else sdl;
 
     // Go through SDL types.
@@ -267,8 +271,12 @@ fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: 
         return std.fmt.allocPrint(allocator, "if ({s}) |str_capture| str_capture.ptr else null", .{val});
 
     // Int, just cast it.
-    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32"))
+    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "i64") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32"))
         return std.fmt.allocPrint(allocator, "@intCast({s})", .{val});
+
+    // Float, just cast it.
+    if (std.mem.eql(u8, sdlType, "f32"))
+        return std.fmt.allocPrint(allocator, "@floatCast({s})", .{val});
 
     // Bool.
     if (std.mem.eql(u8, sdlType, "bool"))
@@ -285,6 +293,10 @@ fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: 
             .Struct => return std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val}),
         };
     }
+
+    // Pointer I guess.
+    if (std.mem.startsWith(u8, sdlType, "*") or std.mem.startsWith(u8, sdlType, "?*"))
+        return val;
 
     // Idk.
     std.debug.print("Val: {s}, Type: {s}\n", .{ val, sdlType });

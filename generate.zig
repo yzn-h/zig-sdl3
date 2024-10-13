@@ -121,6 +121,17 @@ const Subsystem = struct {
 
 const Bindings = struct {
     subsystems: []const Subsystem,
+    files: []const struct {
+        name: []const u8,
+        exports: []const struct {
+            sdlName: []const u8,
+            zigName: []const u8,
+            kind: []const u8,
+            extra: []const struct {
+                arg: []const u8,
+            },
+        },
+    },
 };
 
 const WriteError = error{InvalidEnumValue};
@@ -1215,6 +1226,70 @@ pub fn main() !void {
             try sdl_types.put(st.type, SdlTypeData{ .Struct = st });
         }
     }
+    for (result.files) |file| {
+        for (file.exports) |exp| {
+            if (std.mem.eql(u8, exp.kind, "callback")) {
+                try sdl_types.put(exp.sdlName, SdlTypeData{ .Callback = .{
+                    .func = .{
+                        .arguments = &.{},
+                        .comment = "null",
+                        .ret = .{
+                            .sdl = "void",
+                            .zig = "void",
+                            .checks = &.{},
+                            .convert = "null",
+                        },
+                        .sdlName = exp.sdlName,
+                        .zigName = exp.zigName,
+                    },
+                    .name = exp.zigName,
+                } });
+            } else if (std.mem.eql(u8, exp.kind, "enum")) {
+                try sdl_types.put(exp.sdlName, SdlTypeData{ .Enum = .{
+                    .comment = "null",
+                    .functions = &.{},
+                    .internalType = exp.extra[0].arg,
+                    .sdlType = exp.sdlName,
+                    .values = &.{},
+                    .zigType = exp.zigName,
+                } });
+            } else if (std.mem.eql(u8, exp.kind, "value")) {
+                try sdl_types.put(exp.sdlName, SdlTypeData{ .Value = .{
+                    .comment = "null",
+                    .functions = &.{},
+                    .isOpaque = std.mem.eql(u8, exp.extra[0].arg, "true"),
+                    .presets = &.{},
+                    .sdlName = exp.sdlName,
+                    .type = "void",
+                    .zigName = exp.zigName,
+                } });
+            } else if (std.mem.eql(u8, exp.kind, "flag")) {
+                try sdl_types.put(exp.sdlName, SdlTypeData{ .Flag = .{
+                    .comment = "null",
+                    .name = exp.zigName,
+                    .presets = &.{},
+                    .type = exp.sdlName,
+                    .values = &.{},
+                } });
+            } else if (std.mem.eql(u8, exp.kind, "stringMap")) {
+                try sdl_types.put(exp.sdlName, SdlTypeData{ .StringMap = .{
+                    .comment = "null",
+                    .sdlName = exp.sdlName,
+                    .values = &.{},
+                    .zigName = exp.zigName,
+                } });
+            } else if (std.mem.eql(u8, exp.kind, "struct")) {
+                try sdl_types.put(exp.sdlName, SdlTypeData{ .Struct = .{
+                    .comment = "null",
+                    .customFunctions = &.{},
+                    .functions = &.{},
+                    .members = &.{},
+                    .name = exp.zigName,
+                    .type = exp.sdlName,
+                } });
+            }
+        }
+    }
 
     // Recreate generated folder.
     std.fs.cwd().deleteTree("src") catch {};
@@ -1305,6 +1380,19 @@ pub fn main() !void {
         if (item_cnt != 1) {
             try sdl_file.writer().print("pub const {s} = @import(\"{s}.zig\");\n", .{ subsystem.name, subsystem.name });
         } else try sdl_file.writer().print("pub const {s} = @import(\"{s}.zig\").{s};\n", .{ single_name, subsystem.name, single_name });
+    }
+    if (result.files.len > 0)
+        try nextLine(sdl_file.writer().any(), 0);
+    for (result.files) |file| {
+        try (try std.fs.cwd().openDir("custom", .{})).copyFile(
+            try std.fmt.allocPrint(allocator, "{s}.zig", .{file.name}),
+            try std.fs.cwd().openDir("src", .{}),
+            try std.fmt.allocPrint(allocator, "{s}.zig", .{file.name}),
+            .{},
+        );
+        if (file.exports.len != 1) {
+            try sdl_file.writer().print("pub const {s} = @import(\"{s}.zig\");\n", .{ file.name, file.name });
+        } else try sdl_file.writer().print("pub const {s} = @import(\"{s}.zig\").{s};\n", .{ file.exports[0].zigName, file.name, file.exports[0].zigName });
     }
 
     // C bindings.

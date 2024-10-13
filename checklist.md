@@ -4,6 +4,7 @@ For monitoring how close various subsystems are to completion.
 ## Done
 * Errors
 * Init
+* IO Stream
 * Misc
 
 ## Needs Testing
@@ -33,7 +34,6 @@ For monitoring how close various subsystems are to completion.
 * GPU
 * Haptic
 * HID
-* IO Stream
 * Joystick
 * Keyboard
 * Keycode

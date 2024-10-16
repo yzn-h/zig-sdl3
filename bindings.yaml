@@ -129,6 +129,7 @@ Subsystems:
     Structs: []
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: clipboard
     Callbacks: []
@@ -400,6 +401,7 @@ Subsystems:
               if (!ret)
                   return error.SdlError;
           }
+    Typedefs: []
     Tests: []
   - Name: errors
     Callbacks: []
@@ -461,6 +463,7 @@ Subsystems:
           Checks: []
         Arguments: []
     CustomFunctions: []
+    Typedefs: []
     Tests:
       - Name: Error
         Comment: "Make sure error getting and setting works properly."
@@ -524,6 +527,7 @@ Subsystems:
     Structs: []
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: hints
     Callbacks:
@@ -727,6 +731,7 @@ Subsystems:
             Value: null
             Mode: callback
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: init
     Callbacks: []
@@ -926,6 +931,7 @@ Subsystems:
             Value: null
             Mode: null
     CustomFunctions: []
+    Typedefs: []
     Tests:
       - Name: Init
         Comment: Ensure initialization and shutdown works as expected. Also app properties for some reason.
@@ -1010,6 +1016,7 @@ Subsystems:
     Structs: []
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: locale
     Callbacks: []
@@ -1028,11 +1035,15 @@ Subsystems:
             Type: string
             Value: null
             Comment: "Language in the ISO-639 spec."
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: country
             SdlName: country
             Type: ??string
             Value: null
             Comment: "Country code in the ISO-3166 spec."
+            FromSdlCustom: null
+            ToSdlCustom: null
         Functions: []
         CustomFunctions:
           - Code: |
@@ -1058,6 +1069,7 @@ Subsystems:
                   }
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: message_box
     Callbacks: []
@@ -1114,16 +1126,22 @@ Subsystems:
             Type: SDL_MessageBoxFlags
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: value
             SdlName: buttonID
             Type: int
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: text
             SdlName: text
             Type: string
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
         Functions: []
         CustomFunctions: []
       - Name: Color
@@ -1135,16 +1153,22 @@ Subsystems:
             Type: u8
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: g
             SdlName: g
             Type: u8
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: b
             SdlName: b
             Type: u8
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
         Functions: []
         CustomFunctions:
           - Code: |
@@ -1158,6 +1182,7 @@ Subsystems:
                   }
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: misc
     Callbacks: []
@@ -1184,6 +1209,7 @@ Subsystems:
             Value: null
             Mode: null
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: pen
     Callbacks: []
@@ -1262,6 +1288,7 @@ Subsystems:
     Structs: []
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: pixels
     Callbacks: []
@@ -1416,6 +1443,75 @@ Subsystems:
             SdlValue: $SDL.SDL_PACKEDLAYOUT_1010102
             Comment: null
         Functions: []
+      - SdlType: SDL_ColorType
+        ZigType: ColorType
+        InternalType: c_uint
+        Comment: "Colorspace color type."
+        Values:
+          - ZigValue: Rgb
+            SdlValue: $SDL.SDL_COLOR_TYPE_RGB
+            Comment: null
+          - ZigValue: Ycbcr
+            SdlValue: $SDL.SDL_COLOR_TYPE_YCBCR
+            Comment: null
+        Functions: []
+      - SdlType: SDL_ColorRange
+        ZigType: ColorRange
+        InternalType: c_uint
+        Comment: "Colorspace color range, as described by https://www.itu.int/rec/R-REC-BT.2100-2-201807-I/en."
+        Values:
+          - ZigValue: Limited
+            SdlValue: $SDL.SDL_COLOR_RANGE_LIMITED
+            Comment: null
+          - ZigValue: Full
+            SdlValue: $SDL.SDL_COLOR_RANGE_FULL
+            Comment: null
+        Functions: []
+      - SdlType: SDL_ColorPrimaries
+        ZigType: ColorPrimaries
+        InternalType: c_uint
+        Comment: "Colorspace color primaries, as described by https://www.itu.int/rec/T-REC-H.273-201612-S/en."
+        Values:
+          - ZigValue: BT709
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_BT709
+            Comment: "ITU-R BT.709-6."
+          - ZigValue: UNSPECIFIED
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_UNSPECIFIED
+            Comment: null
+          - ZigValue: BT470M
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_BT470M
+            Comment: "ITU-R BT.470-6 System M."
+          - ZigValue: BT470BG
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_BT470BG
+            Comment: "ITU-R BT.470-6 System B, G / ITU-R BT.601-7 625."
+          - ZigValue: BT601
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_BT601
+            Comment: "ITU-R BT.601-7 525, SMPTE 170M."
+          - ZigValue: SMPTE240
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_SMPTE240
+            Comment: "SMPTE 240M, functionally the same as SDL_COLOR_PRIMARIES_BT601."
+          - ZigValue: GENERIC_FILM
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_GENERIC_FILM
+            Comment: "Generic film (color filters using Illuminant C)."
+          - ZigValue: BT2020
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_BT2020
+            Comment: "ITU-R BT.2020-2 / ITU-R BT.2100-0"
+          - ZigValue: XYZ
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_XYZ
+            Comment: "SMPTE ST 428-1SMPTE ST 428-1."
+          - ZigValue: SMPTE431
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_SMPTE431
+            Comment: "SMPTE RP 431-2."
+          - ZigValue: SMPTE432
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_SMPTE432
+            Comment: "SMPTE EG 432-1 / DCI P3."
+          - ZigValue: EBU3213
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_EBU3213
+            Comment: "EBU Tech. 3213-E."
+          - ZigValue: Custom
+            SdlValue: $SDL.SDL_COLOR_PRIMARIES_CUSTOM
+            Comment: "null"
+        Functions: []
     Errors: []
     Values:
       - SdlName: SDL_PixelFormat
@@ -1424,10 +1520,201 @@ Subsystems:
         IsOpaque: false
         Comment: "Pixel format."
         Presets:
-          - ZigValue: Index1Lsb
+          - ZigValue: Index_1_lsb
             SdlValue: $SDL.SDL_PIXELFORMAT_INDEX1LSB
             Comment: null
-# TODO: REST OF FORMATS!!!
+          - ZigValue: index_1_msb
+            SdlValue: $SDL.SDL_PIXELFORMAT_INDEX1MSB
+            Comment: null
+          - ZigValue: index_2_lsb
+            SdlValue: $SDL.SDL_PIXELFORMAT_INDEX2LSB
+            Comment: null
+          - ZigValue: index_2_msb
+            SdlValue: $SDL.SDL_PIXELFORMAT_INDEX2MSB
+            Comment: null
+          - ZigValue: index_4_lsb
+            SdlValue: $SDL.SDL_PIXELFORMAT_INDEX4LSB
+            Comment: null
+          - ZigValue: index_4_msb
+            SdlValue: $SDL.SDL_PIXELFORMAT_INDEX4MSB
+            Comment: null
+          - ZigValue: index_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_INDEX8
+            Comment: null
+          - ZigValue: packed_rgb_3_3_2
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGB332
+            Comment: null
+          - ZigValue: packed_xrgb_4_4_4_4
+            SdlValue: $SDL.SDL_PIXELFORMAT_XRGB4444
+            Comment: null
+          - ZigValue: packed_xbgr_4_4_4_4
+            SdlValue: $SDL.SDL_PIXELFORMAT_XBGR4444
+            Comment: null
+          - ZigValue: packed_xrgb_1_5_5_5
+            SdlValue: $SDL.SDL_PIXELFORMAT_XRGB1555
+            Comment: null
+          - ZigValue: packed_xbgr_1_5_5_5
+            SdlValue: $SDL.SDL_PIXELFORMAT_XBGR1555
+            Comment: null
+          - ZigValue: packed_argb_4_4_4_4
+            SdlValue: $SDL.SDL_PIXELFORMAT_ARGB4444
+            Comment: null
+          - ZigValue: packed_rgba_4_4_4_4
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGBA4444
+            Comment: null
+          - ZigValue: packed_abgr_4_4_4_4
+            SdlValue: $SDL.SDL_PIXELFORMAT_ABGR4444
+            Comment: null
+          - ZigValue: packed_bgra_4_4_4_4
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGRA4444
+            Comment: null
+          - ZigValue: packed_argb_1_5_5_5
+            SdlValue: $SDL.SDL_PIXELFORMAT_ARGB1555
+            Comment: null
+          - ZigValue: packed_rgba_5_5_5_1
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGBA5551
+            Comment: null
+          - ZigValue: packed_abgr_1_5_5_5
+            SdlValue: $SDL.SDL_PIXELFORMAT_ABGR1555
+            Comment: null
+          - ZigValue: packed_bgra_5_5_5_1
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGRA5551
+            Comment: null
+          - ZigValue: packed_rgb_5_6_5
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGB565
+            Comment: null
+          - ZigValue: packed_bgr_5_6_5
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGR565
+            Comment: null
+          - ZigValue: arr_rgb_24
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGB24
+            Comment: null
+          - ZigValue: arr_bgr_24
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGR24
+            Comment: null
+          - ZigValue: packed_xrgb_8_8_8_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_XRGB8888
+            Comment: null
+          - ZigValue: packed_rgbx_8_8_8_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGBX8888
+            Comment: null
+          - ZigValue: packed_xbgr_8_8_8_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_XBGR8888
+            Comment: null
+          - ZigValue: packed_bgrx_8_8_8_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGRX8888
+            Comment: null
+          - ZigValue: packed_argb_8_8_8_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_ARGB8888
+            Comment: null
+          - ZigValue: packed_rgba_8_8_8_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGBA8888
+            Comment: null
+          - ZigValue: packed_abgr_8_8_8_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_ABGR8888
+            Comment: null
+          - ZigValue: packed_bgra_8_8_8_8
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGRA8888
+            Comment: null
+          - ZigValue: packed_xrgb_2_10_10_10
+            SdlValue: $SDL.SDL_PIXELFORMAT_XRGB2101010
+            Comment: null
+          - ZigValue: packed_xbgr_2_10_10_10
+            SdlValue: $SDL.SDL_PIXELFORMAT_XBGR2101010
+            Comment: null
+          - ZigValue: packed_argb_2_10_10_10
+            SdlValue: $SDL.SDL_PIXELFORMAT_ARGB2101010
+            Comment: null
+          - ZigValue: packed_abgr_2_10_10_10
+            SdlValue: $SDL.SDL_PIXELFORMAT_ABGR2101010
+            Comment: null
+          - ZigValue: array_rgb_48
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGB48
+            Comment: null
+          - ZigValue: array_bgr_48
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGR48
+            Comment: null
+          - ZigValue: array_rgba_64
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGBA64
+            Comment: null
+          - ZigValue: array_argb_64
+            SdlValue: $SDL.SDL_PIXELFORMAT_ARGB64
+            Comment: null
+          - ZigValue: array_bgra_64
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGRA64
+            Comment: null
+          - ZigValue: array_abgr_64
+            SdlValue: $SDL.SDL_PIXELFORMAT_ABGR64
+            Comment: null
+          - ZigValue: array_rgb_48_float
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGB48_FLOAT
+            Comment: null
+          - ZigValue: array_bgr_48_float
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGR48_FLOAT
+            Comment: null
+          - ZigValue: array_rgba_64_float
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGBA64_FLOAT
+            Comment: null
+          - ZigValue: array_argb_64_float
+            SdlValue: $SDL.SDL_PIXELFORMAT_ARGB64_FLOAT
+            Comment: null
+          - ZigValue: array_bgra_64_float
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGRA64_FLOAT
+            Comment: null
+          - ZigValue: array_abgr_64_float
+            SdlValue: $SDL.SDL_PIXELFORMAT_ABGR64_FLOAT
+            Comment: null
+          - ZigValue: fourcc_yv12
+            SdlValue: $SDL.SDL_PIXELFORMAT_YV12
+            Comment: null
+          - ZigValue: fourcc_iyuv
+            SdlValue: $SDL.SDL_PIXELFORMAT_IYUV
+            Comment: null
+          - ZigValue: fourcc_yuy2
+            SdlValue: $SDL.SDL_PIXELFORMAT_YUY2
+            Comment: null
+          - ZigValue: fourcc_uyvy
+            SdlValue: $SDL.SDL_PIXELFORMAT_UYVY
+            Comment: null
+          - ZigValue: fourcc_yvyu
+            SdlValue: $SDL.SDL_PIXELFORMAT_YVYU
+            Comment: null
+          - ZigValue: fourcc_nv12
+            SdlValue: $SDL.SDL_PIXELFORMAT_NV12
+            Comment: null
+          - ZigValue: fourcc_nv21
+            SdlValue: $SDL.SDL_PIXELFORMAT_NV21
+            Comment: null
+          - ZigValue: fourcc_p010
+            SdlValue: $SDL.SDL_PIXELFORMAT_P010
+            Comment: null
+          - ZigValue: fourcc_oes
+            SdlValue: $SDL.SDL_PIXELFORMAT_EXTERNAL_OES
+            Comment: null
+          - ZigValue: array_rgba_32
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGBA32
+            Comment: null
+          - ZigValue: array_argb_32
+            SdlValue: $SDL.SDL_PIXELFORMAT_ARGB32
+            Comment: null
+          - ZigValue: array_bgra_32
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGRA32
+            Comment: null
+          - ZigValue: array_abgr_32
+            SdlValue: $SDL.SDL_PIXELFORMAT_ABGR32
+            Comment: null
+          - ZigValue: array_rgbx_32
+            SdlValue: $SDL.SDL_PIXELFORMAT_RGBX32
+            Comment: null
+          - ZigValue: array_xrgb_32
+            SdlValue: $SDL.SDL_PIXELFORMAT_XRGB32
+            Comment: null
+          - ZigValue: array_bgrx_32
+            SdlValue: $SDL.SDL_PIXELFORMAT_BGRX32
+            Comment: null
+          - ZigValue: array_xbgr_32
+            SdlValue: $SDL.SDL_PIXELFORMAT_XBGR32
+            Comment: null
         Functions:
           - SdlName: SDL_DEFINE_PIXELFOURCC
             ZigName: define4CC
@@ -1668,9 +1955,406 @@ Subsystems:
                 Type: SDL_PixelFormat
                 Value: null
                 Mode: null
+          - SdlName: SDL_GetPixelFormatName
+            ZigName: getName
+            Comment: "Get the human readable name of a pixel format."
+            Return:
+              Sdl: string
+              Zig: ?[]const u8
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEqStr
+                  ComparisonVal: ""SDL_PIXELFORMAT_UNKNOWN""
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetMasksForPixelFormat
+            ZigName: getMasks
+            Comment: "Convert one of the enumerated pixel formats to a bpp value and RGBA masks."
+            Return:
+              Sdl: bool
+              Zig: |
+                !struct { bpp: u8, r_mask: u32, g_mask: u32, b_mask: u32, a_mask: u32 }
+              Convert: .{ .bpp = @intCast(bpp), .r_mask = r_mask, .g_mask = g_mask, .b_mask = b_mask, .a_mask = a_mask }
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+              - Name: bpp
+                Type: c_int
+                Value: &bpp
+                Mode: out
+              - Name: r_mask
+                Type: u32
+                Value: &r_mask
+                Mode: out
+              - Name: g_mask
+                Type: u32
+                Value: &g_mask
+                Mode: out
+              - Name: b_mask
+                Type: u32
+                Value: &b_mask
+                Mode: out
+              - Name: a_mask
+                Type: u32
+                Value: &a_mask
+                Mode: out
+          - SdlName: SDL_GetPixelFormatForMasks
+            ZigName: fromMasks
+            Comment: "Convert a bpp value and RGBA masks to an enumerated pixel format."
+            Return:
+              Sdl: SDL_PixelFormat
+              Zig: ?Format
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_PIXELFORMAT_UNKNOWN
+            Arguments:
+              - Name: bpp
+                Type: u8
+                Value: "@intCast(bpp)"
+                Mode: null
+              - Name: r_mask
+                Type: u32
+                Value: null
+                Mode: null
+              - Name: g_mask
+                Type: u32
+                Value: null
+                Mode: null
+              - Name: b_mask
+                Type: u32
+                Value: null
+                Mode: null
+              - Name: a_mask
+                Type: u32
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetPixelFormatDetails
+            ZigName: getDetails
+            Comment: "Create an SDL_PixelFormatDetails structure corresponding to a pixel format."
+            Return:
+              Sdl: SDL_PixelFormatDetails
+              Zig: !FormatDetails
+              Convert: FormatDetails.fromSdl(ret.*)
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: null
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+      - SdlName: SDL_Palette
+        ZigName: Palette
+        Type: *$SDL.SDL_Palette
+        IsOpaque: false
+        Comment: "A set of indexed colors representing a palette."
+        Presets: []
+        Functions:
+          - SdlName: SDL_CreatePalette
+            ZigName: init
+            Comment: "Create a palette structure with the specified number of color entries."
+            Return:
+              Sdl: *SDL_Palette
+              Zig: !Palette
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: null
+            Arguments:
+              - Name: num_colors
+                Type: u32
+                Value: "@intCast(num_colors)"
+                Mode: null
+          - SdlName: SDL_SetPaletteColors
+            ZigName: setColors
+            Comment: "Set a range of colors in a palette."
+            Return:
+              Sdl: bool
+              Zig: !void
+              Convert: null
+              Checks:
+                - Method: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: *SDL_Palette
+                Value: self.value
+                Mode: null
+              - Name: colors
+                Type: "[]const Color"
+                Value: colors.ptr
+                Mode: verbatim
+              - Name: first_color
+                Type: usize
+                Value: null
+                Mode: null
+              - Name: num_colors
+                Type: null
+                Value: "@intCast(colors.len)"
+                Mode: null
+          - SdlName: SDL_DestroyPalette
+            ZigName: deinit
+            Comment: "Free a palette created earlier."
+            Return:
+              Sdl: void
+              Zig: void
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: *SDL_Palette
+                Value: self.value
+                Mode: null
     Flags: []
     StringMap: []
-    Structs: []
+    Structs:
+      - Name: FormatDetails
+        Type: SDL_PixelFormatDetails
+        Comment: "Details about the format of a pixel."
+        Members:
+          - ZigName: format
+            SdlName: format
+            Type: ?SDL_PixelFormat
+            Value: null
+            Comment: null
+            FromSdlCustom: if (data.format == C.SDL_PIXELFORMAT_UNKNOWN) null else Format{ .value = data.format }
+            ToSdlCustom: if (self.format == null) C.SDL_PIXELFORMAT_UNKNOWN else self.format
+          - ZigName: bits_per_pixel
+            SdlName: bits_per_pixel
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: bytes_per_pixel
+            SdlName: bytes_per_pixel
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: r_mask
+            SdlName: Rmask
+            Type: u32
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: g_mask
+            SdlName: Gmask
+            Type: u32
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: b_mask
+            SdlName: Bmask
+            Type: u32
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: r_bits
+            SdlName: Rbits
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: g_bits
+            SdlName: Gbits
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: b_bits
+            SdlName: Bbits
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: a_bits
+            SdlName: Abits
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: r_shift
+            SdlName: Rshift
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: g_shift
+            SdlName: Gshift
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: b_shift
+            SdlName: Bshift
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+          - ZigName: a_shift
+            SdlName: Ashift
+            Type: u8
+            Value: null
+            Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
+        Functions:
+          - SdlName: SDL_MapRGB
+            ZigName: mapRgb
+            Comment: "Map an RGB triple to an opaque pixel value for a given pixel format."
+            Return:
+              Sdl: u32
+              Zig: u32
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormatDetails
+                Value: null
+                Mode: convertSdlConst
+              - Name: palette
+                Type: ?SDL_Palette
+                Value: null
+                Mode: null
+              - Name: r
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: g
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: b
+                Type: u8
+                Value: null
+                Mode: null
+          - SdlName: SDL_MapRGBA
+            ZigName: mapRgba
+            Comment: "Map an RGBA quadruple to a transparent pixel value for a given pixel format."
+            Return:
+              Sdl: u32
+              Zig: u32
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormatDetails
+                Value: null
+                Mode: convertSdlConst
+              - Name: palette
+                Type: ?SDL_Palette
+                Value: null
+                Mode: null
+              - Name: r
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: g
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: b
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: a
+                Type: u8
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetRGB
+            ZigName: getRgb
+            Comment: "Get RGB values from a pixel in the specified format."
+            Return:
+              Sdl: void
+              Zig: |
+                struct { r: u8, g: u8, b: u8 }
+              Convert: .{ .r = r, .g = g, .b = b }
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormatDetails
+                Value: "@intCast(pixel)"
+                Mode: convertSdlConst
+              - Name: pixel
+                Type: u32
+                Value: "&self_sdl"
+                Mode: null
+              - Name: palette
+                Type: ?SDL_Palette
+                Value: null
+                Mode: null
+              - Name: r
+                Type: u8
+                Value: &r
+                Mode: out
+              - Name: g
+                Type: u8
+                Value: &g
+                Mode: out
+              - Name: b
+                Type: u8
+                Value: &b
+                Mode: out
+          - SdlName: SDL_GetRGBA
+            ZigName: getRgba
+            Comment: "Get RGBA values from a pixel in the specified format."
+            Return:
+              Sdl: void
+              Zig: |
+                struct { r: u8, g: u8, b: u8, a: u8 }
+              Convert: .{ .r = r, .g = g, .b = b, .a = a }
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_PixelFormatDetails
+                Value: "@intCast(pixel)"
+                Mode: convertSdlConst
+              - Name: pixel
+                Type: u32
+                Value: "&self_sdl"
+                Mode: null
+              - Name: palette
+                Type: ?SDL_Palette
+                Value: null
+                Mode: null
+              - Name: r
+                Type: u8
+                Value: &r
+                Mode: out
+              - Name: g
+                Type: u8
+                Value: &g
+                Mode: out
+              - Name: b
+                Type: u8
+                Value: &b
+                Mode: out
+              - Name: a
+                Type: u8
+                Value: &a
+                Mode: out
+        CustomFunctions: []
     Functions: []
     CustomFunctions:
       - Code: |
@@ -1682,6 +2366,25 @@ Subsystems:
                   .ArrayU8, .ArrayU16, .ArrayU32, .ArrayF16, .ArrayF32 => ArrayOrder,
               };
           }
+      - Code: |
+          /// A fully opaque 8-bit alpha value.
+          pub const alpha_opaque: u8 = 255;
+      - Code: |
+          /// A fully transparent 8-bit alpha value.
+          pub const alpha_transparent: u8 = 0;
+      - Code: |
+          /// A fully opaque float alpha value.
+          pub const alpha_opaque_float: f32 = 1;
+      - Code: |
+          /// A fully transparent float alpha value.
+          pub const alpha_transparent_float: f32 = 0;
+    Typedefs:
+      - SdlName: SDL_Color
+        ZigName: Color
+        Comment: "A structure that represents a color as RGBA components."
+      - SdlName: SDL_FColor
+        ZigName: FColor
+        Comment: "The bits of this structure can be directly reinterpreted as a float-packed."
     Tests: []
   - Name: power
     Callbacks: []
@@ -1734,6 +2437,7 @@ Subsystems:
     Structs: []
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: properties
     Callbacks: []
@@ -2012,6 +2716,7 @@ Subsystems:
     Structs: []
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
   - Name: time
     Callbacks: []
@@ -2230,46 +2935,64 @@ Subsystems:
             Type: u31
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: month
             SdlName: month
             Type: SDL_Month
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: day
             SdlName: day
             Type: u5
             Value: null
             Comment: "Range is [0-31] inclusively."
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: hour
             SdlName: hour
             Type: u5
             Value: null
             Comment: "Range is [0-23] inclusively."
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: minute
             SdlName: minute
             Type: u6
             Value: null
             Comment: "Range is [0-59] inclusively."
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: second
             SdlName: second
             Type: u6
             Value: null
             Comment: "Range is [0-59] inclusively."
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: nanosecond
             SdlName: nanosecond
             Type: u31
             Value: null
             Comment: "Range is [0-999999999] inclusively."
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: day_of_week
             SdlName: day_of_week
             Type: SDL_Day
             Value: null
             Comment: null
+            FromSdlCustom: null
+            ToSdlCustom: null
           - ZigName: utc_offset
             SdlName: utc_offset
             Type: int
             Value: null
             Comment: "Seconds east of UTC."
+            FromSdlCustom: null
+            ToSdlCustom: null
         Functions:
           - SdlName: SDL_TimeToDateTime
             ZigName: fromTime
@@ -2362,6 +3085,7 @@ Subsystems:
             Value: null
             Mode: null
     CustomFunctions: []
+    Typedefs: []
     Tests:
       - Name: Dates
         Comment: "Ensure time and date recognition works."
@@ -2500,6 +3224,7 @@ Subsystems:
     Structs: []
     Functions: []
     CustomFunctions: []
+    Typedefs: []
     Tests: []
 Files:
   - Name: rect

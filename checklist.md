@@ -16,6 +16,7 @@ For monitoring how close various subsystems are to completion.
 * Pen
 * Pixels
 * Power
+* Properties
 * Rect
 * Time
 * Version
@@ -23,7 +24,6 @@ For monitoring how close various subsystems are to completion.
 ## In Progress
 * Hints
 * Message Box
-* Properties
 
 ## Not Started
 * Audio

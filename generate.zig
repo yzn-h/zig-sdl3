@@ -51,6 +51,9 @@ const Value = struct {
     comment: []const u8,
     presets: []const ValueData,
     functions: []const Function,
+    customFunctions: []const struct {
+        code: []const u8,
+    },
 };
 
 const Flag = struct {
@@ -239,7 +242,7 @@ fn sdlTypeToZigType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types: st
 
     // Void.
     if (std.mem.eql(u8, sdl, "*void"))
-        return "*?anyopaque";
+        return "?*anyopaque";
 
     // Int.
     if (std.mem.eql(u8, sdl, "int"))
@@ -580,6 +583,11 @@ fn writeValue(allocator: std.mem.Allocator, writer: std.io.AnyWriter, val: Value
     // <function>
     for (val.functions) |func| {
         try writeFunction(allocator, writer, func, indent + 1, sdl_types);
+    }
+    for (val.customFunctions) |func| {
+        try nextLine(writer, 0);
+        try nextLine(writer, indent + 1);
+        try writer.writeAll(func.code);
     }
 
     // };
@@ -1297,6 +1305,7 @@ pub fn main() !void {
             } else if (std.mem.eql(u8, exp.kind, "value")) {
                 try sdl_types.put(exp.sdlName, SdlTypeData{ .Value = .{
                     .comment = "null",
+                    .customFunctions = &.{},
                     .functions = &.{},
                     .isOpaque = std.mem.eql(u8, exp.extra[0].arg, "true"),
                     .presets = &.{},

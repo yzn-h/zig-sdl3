@@ -88,76 +88,40 @@ pub const Group = struct {
 			return error.SdlError;
 	}
 
-	/// Set a pointer value property, null for the value will delete it.
-	pub fn setPointer(
+	/// If the property group has a property.
+	pub fn has(
 		self: Group,
 		name: [:0]const u8,
-		value: *?anyopaque,
-	) !void {
-		const ret = C.SDL_SetPointerProperty(
+	) bool {
+		const ret = C.SDL_HasProperty(
 			self.value,
 			name,
-			value,
 		);
-		if (!ret)
-			return error.SdlError;
+		return ret;
 	}
 
-	/// Set a string value property, null for the value will delete it.
-	pub fn setString(
+	/// Get the type of property.
+	pub fn getType(
 		self: Group,
 		name: [:0]const u8,
-		value: [:0]const u8,
-	) !void {
-		const ret = C.SDL_SetStringProperty(
+	) ?Type {
+		const ret = C.SDL_GetPropertyType(
 			self.value,
 			name,
-			value,
 		);
-		if (!ret)
-			return error.SdlError;
+		if (ret == C.SDL_PROPERTY_TYPE_INVALID)
+			return null;
+		return @enumFromInt(ret);
 	}
 
-	/// Set a number value property, null for the value will delete it.
-	pub fn setNumber(
+	/// Clear a property from the group.
+	pub fn clear(
 		self: Group,
 		name: [:0]const u8,
-		value: i64,
 	) !void {
-		const ret = C.SDL_SetNumberProperty(
+		const ret = C.SDL_ClearProperty(
 			self.value,
 			name,
-			@intCast(value),
-		);
-		if (!ret)
-			return error.SdlError;
-	}
-
-	/// Set a float value property, null for the value will delete it.
-	pub fn setFloat(
-		self: Group,
-		name: [:0]const u8,
-		value: f32,
-	) !void {
-		const ret = C.SDL_SetFloatProperty(
-			self.value,
-			name,
-			@floatCast(value),
-		);
-		if (!ret)
-			return error.SdlError;
-	}
-
-	/// Set a boolean value property, null for the value will delete it.
-	pub fn setBoolean(
-		self: Group,
-		name: [:0]const u8,
-		value: bool,
-	) !void {
-		const ret = C.SDL_SetBooleanProperty(
-			self.value,
-			name,
-			value,
 		);
 		if (!ret)
 			return error.SdlError;
@@ -172,4 +136,63 @@ pub const Group = struct {
 		);
 		_ = ret;
 	}
+
+	/// Set a property.
+    pub fn set(
+        self: Group,
+        name: [:0]const u8,
+        value: Property,
+    ) !void {
+        const ret = switch (value) {
+            .Pointer => |pt| C.SDL_SetPointerProperty(self.value, name, pt),
+            .String => |str| C.SDL_SetStringProperty(self.value, name, str),
+            .Number => |num| C.SDL_SetNumberProperty(self.value, name, num),
+            .Float => |num| C.SDL_SetFloatProperty(self.value, name, num),
+            .Boolean => |val| C.SDL_SetBooleanProperty(self.value, name, val),
+        };
+        if (!ret)
+            return error.SdlError;
+    }
+
+	/// Get a property.
+    pub fn get(
+        self: Group,
+        name: [:0]const u8,
+    ) ?Property {
+        return switch (self.getPropertyType(name)) {
+            C.SDL_PROPERTY_TYPE_INVALID => null,
+            C.SDL_PROPERTY_TYPE_POINTER => Property{ .Pointer = C.SDL_GetPointerProperty(self.value, name, null) },
+            C.SDL_PROPERTY_TYPE_STRING => Property{ .String = C.SDL_GetStringProperty(self.value, name, "") },
+            C.SDL_PROPERTY_TYPE_NUMBER => Property{ .Number = C.SDL_GetNumberProperty(self.value, name, 0) },
+            C.SDL_PROPERTY_TYPE_FLOAT => Property{ .Float = C.SDL_GetFloatProperty(self.value, name, 0) },
+            C.SDL_PROPERTY_TYPE_BOOLEAN => Property{ .Boolean = C.SDL_GetBooleanProperty(self.value, name, false) },
+        };
+    }
+
+	/// Get all properties in the group. Returned map is owned.
+    pub fn getAll(
+        self: Group,
+        allocator: std.mem.Allocator,
+    ) !std.StringHashMap(Property) {
+        var ret = std.StringArrayHashMap(Property).init(allocator);
+        if (!C.SDL_EnumerateProperties(self.value, propertiesEnumerateCallback, &ret))
+            return error.SdlError;
+        return ret;
+    }
 };
+
+/// Property.
+pub const Property = union(Type) {
+    Pointer: ?*anyopaque,
+    String: [:0]const u8,
+    Number: i64,
+    Float: f32,
+    Boolean: bool,
+};
+
+/// Used for adding properties to a list.
+fn propertiesEnumerateCallback(user_data: *std.StringHashMap(Property), id: C.SDL_PropertiesID, name: [*c]const u8) callconv(.C) void {
+    const group = Group{ .value = id };
+    if (group.get(name)) |val|
+        user_data.put(name, val) catch {};
+}

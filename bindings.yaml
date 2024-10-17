@@ -124,6 +124,7 @@ Subsystems:
                 Type: SDL_BlendOperation
                 Value: null
                 Mode: null
+        CustomFunctions: []
     Flags: []
     StringMap: []
     Structs: []
@@ -526,6 +527,7 @@ Subsystems:
                 Type: string
                 Value: null
                 Mode: null
+        CustomFunctions: []
     Flags: []
     StringMap: []
     Structs: []
@@ -1015,6 +1017,7 @@ Subsystems:
                 Type: SDL_SharedObject
                 Value: null
                 Mode: null
+        CustomFunctions: []
     Flags: []
     StringMap: []
     Structs: []
@@ -1254,6 +1257,7 @@ Subsystems:
         Comment: "A pen instance."
         Presets: []
         Functions: []
+        CustomFunctions: []
     Flags:
       - Name: InputFlags
         Type: SDL_PenInputFlags
@@ -2183,6 +2187,7 @@ Subsystems:
                 Type: SDL_PixelFormat
                 Value: null
                 Mode: null
+        CustomFunctions: []
       - SdlName: SDL_Palette
         ZigName: Palette
         Type: *$SDL.SDL_Palette
@@ -2245,6 +2250,7 @@ Subsystems:
                 Type: *SDL_Palette
                 Value: self.value
                 Mode: null
+        CustomFunctions: []
       - SdlName: SDL_Colorspace
         ZigName: Colorspace
         Type: u32
@@ -2474,6 +2480,7 @@ Subsystems:
                 Type: SDL_Colorspace
                 Value: null
                 Mode: null
+        CustomFunctions: []
     Flags: []
     StringMap: []
     Structs:
@@ -2943,16 +2950,14 @@ Subsystems:
                 Type: *UserData
                 Value: null
                 Mode: null
-          - SdlName: SDL_SetPointerProperty
-            ZigName: setPointer
-            Comment: "Set a pointer value property, null for the value will delete it."
+          - SdlName: SDL_HasProperty
+            ZigName: has
+            Comment: "If the property group has a property."
             Return:
               Sdl: bool
-              Zig: "!void"
+              Zig: bool
               Convert: null
-              Checks:
-                - Method: ReturnErrIfEq
-                  ComparisonVal: false
+              Checks: []
               Arguments:
               - Name: self
                 Type: SDL_PropertiesID
@@ -2962,20 +2967,16 @@ Subsystems:
                 Type: string
                 Value: null
                 Mode: null
-              - Name: value
-                Type: *void
-                Value: null
-                Mode: null
-          - SdlName: SDL_SetStringProperty
-            ZigName: setString
-            Comment: "Set a string value property, null for the value will delete it."
+          - SdlName: SDL_GetPropertyType
+            ZigName: getType
+            Comment: "Get the type of property."
             Return:
-              Sdl: bool
-              Zig: "!void"
+              Sdl: SDL_PropertyType
+              Zig: ?Type
               Convert: null
               Checks:
-                - Method: ReturnErrIfEq
-                  ComparisonVal: false
+                - Method: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_PROPERTY_TYPE_INVALID
               Arguments:
               - Name: self
                 Type: SDL_PropertiesID
@@ -2985,13 +2986,9 @@ Subsystems:
                 Type: string
                 Value: null
                 Mode: null
-              - Name: value
-                Type: string
-                Value: null
-                Mode: null
-          - SdlName: SDL_SetNumberProperty
-            ZigName: setNumber
-            Comment: "Set a number value property, null for the value will delete it."
+          - SdlName: SDL_ClearProperty
+            ZigName: clear
+            Comment: "Clear a property from the group."
             Return:
               Sdl: bool
               Zig: "!void"
@@ -2999,63 +2996,13 @@ Subsystems:
               Checks:
                 - Method: ReturnErrIfEq
                   ComparisonVal: false
-              Arguments:
+            Arguments:
               - Name: self
                 Type: SDL_PropertiesID
                 Value: null
                 Mode: null
               - Name: name
                 Type: string
-                Value: null
-                Mode: null
-              - Name: value
-                Type: i64
-                Value: null
-                Mode: null
-          - SdlName: SDL_SetFloatProperty
-            ZigName: setFloat
-            Comment: "Set a float value property, null for the value will delete it."
-            Return:
-              Sdl: bool
-              Zig: "!void"
-              Convert: null
-              Checks:
-                - Method: ReturnErrIfEq
-                  ComparisonVal: false
-              Arguments:
-              - Name: self
-                Type: SDL_PropertiesID
-                Value: null
-                Mode: null
-              - Name: name
-                Type: string
-                Value: null
-                Mode: null
-              - Name: value
-                Type: f32
-                Value: null
-                Mode: null
-          - SdlName: SDL_SetBooleanProperty
-            ZigName: setBoolean
-            Comment: "Set a boolean value property, null for the value will delete it."
-            Return:
-              Sdl: bool
-              Zig: "!void"
-              Convert: null
-              Checks:
-                - Method: ReturnErrIfEq
-                  ComparisonVal: false
-              Arguments:
-              - Name: self
-                Type: SDL_PropertiesID
-                Value: null
-                Mode: null
-              - Name: name
-                Type: string
-                Value: null
-                Mode: null
-              - Name: value
-                Type: bool
                 Value: null
                 Mode: null
           - SdlName: SDL_DestroyProperties
@@ -3071,11 +3018,71 @@ Subsystems:
                 Type: SDL_PropertiesID
                 Value: null
                 Mode: null
+      CustomFunctions:
+          - Code: |
+              /// Set a property.
+                  pub fn set(
+                      self: Group,
+                      name: [:0]const u8,
+                      value: Property,
+                  ) !void {
+                      const ret = switch (value) {
+                          .Pointer => |pt| C.SDL_SetPointerProperty(self.value, name, pt),
+                          .String => |str| C.SDL_SetStringProperty(self.value, name, str),
+                          .Number => |num| C.SDL_SetNumberProperty(self.value, name, num),
+                          .Float => |num| C.SDL_SetFloatProperty(self.value, name, num),
+                          .Boolean => |val| C.SDL_SetBooleanProperty(self.value, name, val),
+                      };
+                      if (!ret)
+                          return error.SdlError;
+                  }
+          - Code: |
+              /// Get a property.
+                  pub fn get(
+                      self: Group,
+                      name: [:0]const u8,
+                  ) ?Property {
+                      return switch (self.getPropertyType(name)) {
+                          C.SDL_PROPERTY_TYPE_INVALID => null,
+                          C.SDL_PROPERTY_TYPE_POINTER => Property{ .Pointer = C.SDL_GetPointerProperty(self.value, name, null) },
+                          C.SDL_PROPERTY_TYPE_STRING => Property{ .String = C.SDL_GetStringProperty(self.value, name, "") },
+                          C.SDL_PROPERTY_TYPE_NUMBER => Property{ .Number = C.SDL_GetNumberProperty(self.value, name, 0) },
+                          C.SDL_PROPERTY_TYPE_FLOAT => Property{ .Float = C.SDL_GetFloatProperty(self.value, name, 0) },
+                          C.SDL_PROPERTY_TYPE_BOOLEAN => Property{ .Boolean = C.SDL_GetBooleanProperty(self.value, name, false) },
+                      };
+                  }
+          - Code: |
+              /// Get all properties in the group. Returned map is owned.
+                  pub fn getAll(
+                      self: Group,
+                      allocator: std.mem.Allocator,
+                  ) !std.StringHashMap(Property) {
+                      var ret = std.StringArrayHashMap(Property).init(allocator);
+                      if (!C.SDL_EnumerateProperties(self.value, propertiesEnumerateCallback, &ret))
+                          return error.SdlError;
+                      return ret;
+                  }
     Flags: []
     StringMap: []
     Structs: []
     Functions: []
-    CustomFunctions: []
+    CustomFunctions:
+      - Code: |
+          /// Property.
+          pub const Property = union(Type) {
+              Pointer: ?*anyopaque,
+              String: [:0]const u8,
+              Number: i64,
+              Float: f32,
+              Boolean: bool,
+          };
+      - Code: |
+          /// Used for adding properties to a list.
+          fn propertiesEnumerateCallback(user_data: *std.StringHashMap(Property), id: C.SDL_PropertiesID, name: [*c]const u8) callconv(.C) void {
+              const group = Group{ .value = id };
+              if (group.get(name)) |val|
+                  user_data.put(name, val) catch {};
+          }
     Typedefs: []
     Tests: []
   - Name: time
@@ -3283,6 +3290,7 @@ Subsystems:
                 Type: u32
                 Value: null
                 Mode: null
+        CustomFunctions: []
     Flags: []
     StringMap: []
     Structs:
@@ -3580,6 +3588,7 @@ Subsystems:
                   ComparisonVal: |
                     ""
             Arguments: []
+        CustomFunctions: []
     Flags: []
     StringMap: []
     Structs: []

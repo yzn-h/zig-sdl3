@@ -14,6 +14,7 @@ For monitoring how close various subsystems are to completion.
 * Loadso
 * Locale
 * Pen
+* Pixels
 * Power
 * Rect
 * Time
@@ -22,7 +23,6 @@ For monitoring how close various subsystems are to completion.
 ## In Progress
 * Hints
 * Message Box
-* Pixels
 * Properties
 
 ## Not Started

@@ -190,7 +190,7 @@ Subsystems:
         Comment: "Put UTF-8 text into the clipboard."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -205,11 +205,12 @@ Subsystems:
         Comment: "Get UTF-8 text from the clipboard. Note that `sdl3.free` should be called on the return value."
         Return:
           Sdl: string
-          Zig: ![]const u8
+          Zig: "![]const u8"
           Convert: null
           Checks:
             - Method: ReturnErrIfEqStr
-              ComparisonVal: """"
+              ComparisonVal: |
+                ""
         Arguments: []
       - SdlName: SDL_HasClipboardText
         ZigName: hasText
@@ -225,7 +226,7 @@ Subsystems:
         Comment: "Put UTF-8 text into the primary selection."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -240,11 +241,12 @@ Subsystems:
         Comment: "Get UTF-8 text from the primary selection. Note that `sdl3.free` should be called on the return value."
         Return:
           Sdl: string
-          Zig: ![]const u8
+          Zig: "![]const u8"
           Convert: null
           Checks:
             - Method: ReturnErrIfEqStr
-              ComparisonVal: """"
+              ComparisonVal: |
+                ""
         Arguments: []
       - SdlName: SDL_HasPrimarySelectionText
         ZigName: hasPrimarySelectionText
@@ -260,7 +262,7 @@ Subsystems:
 #        Comment: "Tell the system that data is available for the given MIME types. When requested, the set and clear callbacks will be called."
 #        Return:
 #          Sdl: bool
-#          Zig: !void
+#          Zig: "!void"
 #          Convert: null
 #          Checks:
 #            - Method: ReturnErrIfEq
@@ -295,7 +297,7 @@ Subsystems:
         Comment: "Clear the clipboard data."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -306,7 +308,7 @@ Subsystems:
         Comment: "Get the data from clipboard for a given mime type. Note that `sdl3.free` should be called on the return value."
         Return:
           Sdl: "?*anyopaque"
-          Zig: ![]const u8
+          Zig: "![]const u8"
           Convert: .{ .ptr = @ptrCast(ret.?), .len = @intCast(size) }
           Checks:
             - Method: ReturnErrIfEq
@@ -415,7 +417,7 @@ Subsystems:
     Flags: []
     StringMap: []
     Structs: []
-    Functions: []
+    Functions:
       - SdlName: SDL_SetError
         ZigName: set
         Comment: "Set the current SDL error."
@@ -427,7 +429,8 @@ Subsystems:
         Arguments:
           - Name: fmt
             Type: null
-            Value: ""%s""
+            Value: |
+              "%s"
             Mode: null
           - Name: err
             Type: stringptr
@@ -451,7 +454,8 @@ Subsystems:
           Convert: null
           Checks:
             - Method: ReturnNullIfEqStr
-              ComparisonVal: """"
+              ComparisonVal: |
+                ""
         Arguments: []
       - SdlName: SDL_ClearError
         ZigName: clear
@@ -595,7 +599,7 @@ Subsystems:
         Comment: "Set a hint with a specific priority. Will only set if the hint was previously set with a lower priority."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -618,7 +622,7 @@ Subsystems:
         Comment: "Set a hint with normal priority."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -637,7 +641,7 @@ Subsystems:
         Comment: "Reset a hint to its default value."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -691,7 +695,7 @@ Subsystems:
         Comment: "Add a function to watch a particular hint."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -828,7 +832,7 @@ Subsystems:
         Comment: "Initialize the SDL systems. Each system is ref-counted so init and quit each one, then call shutdown."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -878,7 +882,7 @@ Subsystems:
         Comment: "Get which given systems have been initialized."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -901,7 +905,7 @@ Subsystems:
         Comment: "Set a metadata property for the app. Note that the value can be null to clear it."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -971,7 +975,7 @@ Subsystems:
             Comment: Load a shared object.
             Return:
               Sdl: SDL_SharedObject
-              Zig: !SharedObject
+              Zig: "!SharedObject"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -1198,7 +1202,7 @@ Subsystems:
         Comment: "Open a URL in the browser of the platform. Can also do local files with `file:///path/to/file` if supported."
         Return:
           Sdl: bool
-          Zig: !void
+          Zig: "!void"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -1511,6 +1515,132 @@ Subsystems:
           - ZigValue: Custom
             SdlValue: $SDL.SDL_COLOR_PRIMARIES_CUSTOM
             Comment: "null"
+        Functions: []
+      - SdlType: SDL_TransferCharacteristics
+        ZigType: TransferCharacteristics
+        InternalType: c_uint
+        Comment: "Colorspace transfer characteristics."
+        Values:
+          - ZigValue: BT709
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_BT709
+            Comment: "Rec. ITU-R BT.709-6 / ITU-R BT1361."
+          - ZigValue: Unspecified
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_UNSPECIFIED
+            Comment: null
+          - ZigValue: Gamma22
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_GAMMA22
+            Comment: "ITU-R BT.470-6 System M / ITU-R BT1700 625 PAL & SECAM."
+          - ZigValue: Gamma28
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_GAMMA28
+            Comment: "ITU-R BT.470-6 System B, G."
+          - ZigValue: BT601
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_BT601
+            Comment: "SMPTE ST 170M / ITU-R BT.601-7 525 or 625."
+          - ZigValue: SMPTE240
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_SMPTE240
+            Comment: "SMPTE ST 240M."
+          - ZigValue: Linear
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_LINEAR
+            Comment: null
+          - ZigValue: Log100
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_LOG100
+            Comment: null
+          - ZigValue: Sqrt10
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_LOG100_SQRT10
+            Comment: null
+          - ZigValue: IEC61966
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_IEC61966
+            Comment: "IEC 61966-2-4."
+          - ZigValue: BT1361
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_BT1361
+            Comment: "ITU-R BT1361 Extended Colour Gamut."
+          - ZigValue: Srgb
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_SRGB
+            Comment: "IEC 61966-2-1 (sRGB or sYCC)."
+          - ZigValue: BT2020_10Bit
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_BT2020_10BIT
+            Comment: "ITU-R BT2020 for 10-bit system."
+          - ZigValue: Bt2020_12Bit
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_BT2020_12BIT
+            Comment: "ITU-R BT2020 for 12-bit system."
+          - ZigValue: PQ
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_PQ
+            Comment: "SMPTE ST 2084 for 10-, 12-, 14- and 16-bit system."
+          - ZigValue: SMPTE428
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_SMPTE428
+            Comment: "SMPTE ST 428-1."
+          - ZigValue: HLG
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_HLG
+            Comment: "ARIB STD-B67, known as hybrid log-gamma (HLG)."
+          - ZigValue: Custom
+            SdlValue: $SDL.SDL_TRANSFER_CHARACTERISTICS_CUSTOM
+            Comment: null
+        Functions: []
+      - SdlType: SDL_MatrixCoefficients
+        ZigType: MatrixCoefficients
+        InternalType: c_uint
+        Comment: "Colorspace matrix coefficients."
+        Values:
+          - ZigValue: Identity
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_IDENTITY
+            Comment: null
+          - ZigValue: BT709
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_BT709
+            Comment: "ITU-R BT.709-6."
+          - ZigValue: Unspecified
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_UNSPECIFIED
+            Comment: null
+          - ZigValue: FCC
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_FCC
+            Comment: "US FCC Title 47."
+          - ZigValue: BT470BG
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_BT470BG
+            Comment: "ITU-R BT.470-6 System B, G / ITU-R BT.601-7 625, functionally the same as SDL_MATRIX_COEFFICIENTS_BT601."
+          - ZigValue: BT601
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_BT601
+            Comment: "ITU-R BT.601-7 525."
+          - ZigValue: SMPTE240
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_SMPTE240
+            Comment: "SMPTE 240M."
+          - ZigValue: YCGCO
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_YCGCO
+            Comment: null
+          - ZigValue: BT2020_NCL
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_BT2020_NCL
+            Comment: "ITU-R BT.2020-2 non-constant luminance."
+          - ZigValue: BT2020_CL
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_BT2020_CL
+            Comment: "ITU-R BT.2020-2 constant luminance."
+          - ZigValue: SMPTE2085
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_SMPTE2085
+            Comment: null
+          - ZigValue: ChromaDerivedNCL
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_CHROMA_DERIVED_NCL
+            Comment: null
+          - ZigValue: ChromaDerivedCL
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_CHROMA_DERIVED_CL
+            Comment: null
+          - ZigValue: ICTCP
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_ICTCP
+            Comment: "ITU-R BT.2100-0 ICTCP."
+          - ZigValue: Custom
+            SdlValue: $SDL.SDL_MATRIX_COEFFICIENTS_CUSTOM
+            Comment: null
+        Functions: []
+      - SdlType: SDL_ChromaLocation
+        ZigType: ChromaLocation
+        InternalType: c_uint
+        Comment: "Colorspace chroma sample location."
+        Values:
+          - ZigValue: Left
+            SdlValue: $SDL.SDL_CHROMA_LOCATION_LEFT
+            Comment: "In MPEG-2, MPEG-4, and AVC, Cb and Cr are taken on midpoint of the left-edge of the 2x2 square. In other words, they have the same horizontal location as the top-left pixel, but is shifted one-half pixel down vertically."
+          - ZigValue: Center
+            SdlValue: $SDL.SDL_CHROMA_LOCATION_CENTER
+            Comment: "In JPEG/JFIF, H.261, and MPEG-1, Cb and Cr are taken at the center of the 2x2 square. In other words, they are offset one-half pixel to the right and one-half pixel down compared to the top-left pixel."
+          - ZigValue: TopLeft
+            SdlValue: $SDL.SDL_CHROMA_LOCATION_TOPLEFT
+            Comment: "In HEVC for BT.2020 and BT.2100 content (in particular on Blu-rays), Cb and Cr are sampled at the same location as the group's top-left Y pixel (co-sited, co-located)."
         Functions: []
     Errors: []
     Values:
@@ -1964,7 +2094,8 @@ Subsystems:
               Convert: null
               Checks:
                 - Method: ReturnNullIfEqStr
-                  ComparisonVal: ""SDL_PIXELFORMAT_UNKNOWN""
+                  ComparisonVal: |
+                    "SDL_PIXELFORMAT_UNKNOWN"
             Arguments:
               - Name: self
                 Type: SDL_PixelFormat
@@ -2042,7 +2173,7 @@ Subsystems:
             Comment: "Create an SDL_PixelFormatDetails structure corresponding to a pixel format."
             Return:
               Sdl: SDL_PixelFormatDetails
-              Zig: !FormatDetails
+              Zig: "!FormatDetails"
               Convert: FormatDetails.fromSdl(ret.*)
               Checks:
                 - Method: ReturnNullIfEq
@@ -2064,7 +2195,7 @@ Subsystems:
             Comment: "Create a palette structure with the specified number of color entries."
             Return:
               Sdl: *SDL_Palette
-              Zig: !Palette
+              Zig: "!Palette"
               Convert: null
               Checks:
                 - Method: ReturnNullIfEq
@@ -2079,7 +2210,7 @@ Subsystems:
             Comment: "Set a range of colors in a palette."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2113,6 +2244,235 @@ Subsystems:
               - Name: self
                 Type: *SDL_Palette
                 Value: self.value
+                Mode: null
+      - SdlName: SDL_Colorspace
+        ZigName: Colorspace
+        Type: u32
+        IsOpaque: false
+        Comment: "Colorspace definitions."
+        Presets:
+          - ZigValue: Srgb
+            SdlValue: $SDL.SDL_COLORSPACE_SRGB
+            Comment: "sRGB is a gamma corrected colorspace, and the default colorspace for SDL rendering and 8-bit RGB surfaces."
+          - ZigValue: Linear
+            SdlValue: $SDL.SDL_COLORSPACE_SRGB_LINEAR
+            Comment: "This is a linear colorspace and the default colorspace for floating point surfaces. On Windows this is the scRGB colorspace, and on Apple platforms this is kCGColorSpaceExtendedLinearSRGB for EDR content."
+          - ZigValue: Hdr10
+            SdlValue: $SDL.SDL_COLORSPACE_HDR10
+            Comment: "HDR10 is a non-linear HDR colorspace and the default colorspace for 10-bit surfaces."
+          - ZigValue: Jpeg
+            SdlValue: $SDL.SDL_COLORSPACE_JPEG
+            Comment: "Equivalent to DXGI_COLOR_SPACE_YCBCR_FULL_G22_NONE_P709_X601."
+          - ZigValue: BT601Limited
+            SdlValue: $SDL.SDL_COLORSPACE_BT601_LIMITED
+            Comment: "Equivalent to DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P601."
+          - ZigValue: BT601Full
+            SdlValue: $SDL.SDL_COLORSPACE_BT601_FULL
+            Comment: "Equivalent to DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P601."
+          - ZigValue: BT709Limited
+            SdlValue: $SDL.SDL_COLORSPACE_BT709_LIMITED
+            Comment: "Equivalent to DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709."
+          - ZigValue: BT709Full
+            SdlValue: $SDL.SDL_COLORSPACE_BT709_FULL
+            Comment: "Equivalent to DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709."
+          - ZigValue: BT2020Limited
+            SdlValue: $SDL.SDL_COLORSPACE_BT2020_LIMITED
+            Comment: "Equivalent to DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P2020."
+          - ZigValue: BT2020Full
+            SdlValue: $SDL.SDL_COLORSPACE_BT2020_FULL
+            Comment: "Equivalent to DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P2020."
+          - ZigValue: RgbDefault
+            SdlValue: $SDL.SDL_COLORSPACE_RGB_DEFAULT
+            Comment: "The default colorspace for RGB surfaces if no colorspace is specified."
+          - ZigValue: YuvDefault
+            SdlValue: $SDL.SDL_COLORSPACE_YUV_DEFAULT
+            Comment: "The default colorspace for YUV surfaces if no colorspace is specified."
+        Functions:
+          - SdlName: SDL_DEFINE_COLORSPACE
+            ZigName: define
+            Comment: "Create a colorspace."
+            Return:
+              Sdl: SDL_Colorspace
+              Zig: Colorspace
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: color_type
+                Type: SDL_ColorType
+                Value: null
+                Mode: null
+              - Name: range
+                Type: SDL_ColorRange
+                Value: null
+                Mode: null
+              - Name: primaries
+                Type: SDL_ColorPrimaries
+                Value: null
+                Mode: null
+              - Name: transfer
+                Type: SDL_TransferCharacteristics
+                Value: null
+                Mode: null
+              - Name: matrix
+                Type: SDL_MatrixCoefficients
+                Value: null
+                Mode: null
+              - Name: chroma
+                Type: ?SDL_ChromaLocation
+                Value: if (chroma == null) C.SDL_CHROMA_LOCATION_NONE else @intFromEnum(chroma)
+                Mode: null
+          - SdlName: SDL_COLORSPACETYPE
+            ZigName: getType
+            Comment: "Get the color space type."
+            Return:
+              Sdl: SDL_ColorType
+              Zig: ?ColorType
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_COLOR_TYPE_UNKNOWN
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_COLORSPACERANGE
+            ZigName: getRange
+            Comment: "Get the color space range."
+            Return:
+              Sdl: SDL_ColorRange
+              Zig: ?ColorRange
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_COLOR_RANGE_UNKNOWN
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_COLORSPACECHROMA
+            ZigName: getChromaLocation
+            Comment: "Get the color space chroma."
+            Return:
+              Sdl: SDL_ChromaLocation
+              Zig: ?ChromaLocation
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_CHROMA_LOCATION_NONE
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_COLORSPACEPRIMARIES
+            ZigName: getColorPrimaries
+            Comment: "Get the color space primaries."
+            Return:
+              Sdl: SDL_ColorPrimaries
+              Zig: ?ColorPrimaries
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_COLOR_PRIMARIES_UNKNOWN
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_COLORSPACETRANSFER
+            ZigName: getTransferCharacteristics
+            Comment: "Get the color space transfer characteristics."
+            Return:
+              Sdl: SDL_TransferCharacteristics
+              Zig: ?TransferCharacteristics
+              Convert: null
+              Checks:
+                - Method: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_TRANSFER_CHARACTERISTICS_UNKNOWN
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_COLORSPACEMATRIX
+            ZigName: getMatrix
+            Comment: "Get the color space matrix."
+            Return:
+              Sdl: SDL_MatrixCoefficients
+              Zig: MatrixCoefficients
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISCOLORSPACE_MATRIX_BT601
+            ZigName: isMatrixBT601
+            Comment: "If the matrix is BT601."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISCOLORSPACE_MATRIX_BT709
+            ZigName: isMatrixBT709
+            Comment: "If the matrix is BT709."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISCOLORSPACE_MATRIX_BT2020_NCL
+            ZigName: isMatrixBT2020_NCL
+            Comment: "If the matrix is BT2020 NCL."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISCOLORSPACE_LIMITED_RANGE
+            ZigName: isLimitedRange
+            Comment: "If the color space is limited range."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+          - SdlName: SDL_ISCOLORSPACE_FULL_RANGE
+            ZigName: isFullRange
+            Comment: "If the color space is full range."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Colorspace
+                Value: null
                 Mode: null
     Flags: []
     StringMap: []
@@ -2477,7 +2837,7 @@ Subsystems:
             Comment: "Get the global SDL properties."
             Return:
               Sdl: SDL_PropertiesID
-              Zig: !Group
+              Zig: "!Group"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2488,7 +2848,7 @@ Subsystems:
             Comment: "Create a group of properties."
             Return:
               Sdl: SDL_PropertiesID
-              Zig: !Group
+              Zig: "!Group"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2499,7 +2859,7 @@ Subsystems:
             Comment: "Copy and replace all properties in destination with ones in this one. Will not copy properties that require cleanup."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2518,7 +2878,7 @@ Subsystems:
             Comment: "Lock a group of properties."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2533,7 +2893,7 @@ Subsystems:
             Comment: "Unlock a group of properties."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2548,7 +2908,7 @@ Subsystems:
             Comment: "Set a pointer property in a group of properties with a cleanup function that is called when the property is deleted."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2588,7 +2948,7 @@ Subsystems:
             Comment: "Set a pointer value property, null for the value will delete it."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2611,7 +2971,7 @@ Subsystems:
             Comment: "Set a string value property, null for the value will delete it."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2634,7 +2994,7 @@ Subsystems:
             Comment: "Set a number value property, null for the value will delete it."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2657,7 +3017,7 @@ Subsystems:
             Comment: "Set a float value property, null for the value will delete it."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2680,7 +3040,7 @@ Subsystems:
             Comment: "Set a boolean value property, null for the value will delete it."
             Return:
               Sdl: bool
-              Zig: !void
+              Zig: "!void"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -2831,7 +3191,7 @@ Subsystems:
             Comment: "Gets the current value of the system realtime clock in nanoseconds since Jan 1, 1970 in Universal Coordinated Time (UTC)."
             Return:
               Sdl: bool
-              Zig: !Time
+              Zig: "!Time"
               Convert: Time{ .value = time }
               Checks:
                 - Method: ReturnErrIfEq
@@ -2870,7 +3230,7 @@ Subsystems:
             Comment: "Converts a calendar time to an SDL_Time in nanoseconds since the epoch."
             Return:
               Sdl: bool
-              Zig: !Time
+              Zig: "!Time"
               Convert: Time{ .value = time }
               Checks:
                 - Method: ReturnErrIfEq
@@ -2999,7 +3359,7 @@ Subsystems:
             Comment: "Converts an SDL time in nanoseconds since the epoch to a calendar time in the SDL date time format."
             Return:
               Sdl: bool
-              Zig: !DateTime
+              Zig: "!DateTime"
               Convert: null
               Checks:
                 - Method: ReturnErrIfEq
@@ -3024,7 +3384,7 @@ Subsystems:
         Comment: "Get the number of days in a month for a given year."
         Return:
           Sdl: int
-          Zig: !u5
+          Zig: "!u5"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -3043,7 +3403,7 @@ Subsystems:
         Comment: "Get the day of a given year with value [0-365]."
         Return:
           Sdl: int
-          Zig: !u9
+          Zig: "!u9"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -3066,7 +3426,7 @@ Subsystems:
         Comment: "Get the day of a given week."
         Return:
           Sdl: SDL_Day
-          Zig: !Day
+          Zig: "!Day"
           Convert: null
           Checks:
             - Method: ReturnErrIfEq
@@ -3217,7 +3577,8 @@ Subsystems:
               Convert: null
               Checks:
                 - Method: ReturnNullIfEqStr
-                  ComparisonVal: """"
+                  ComparisonVal: |
+                    ""
             Arguments: []
     Flags: []
     StringMap: []

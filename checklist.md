@@ -24,6 +24,7 @@ For monitoring how close various subsystems are to completion.
 ## In Progress
 * Hints
 * Message Box
+* Surface
 
 ## Not Started
 * Audio
@@ -47,7 +48,6 @@ For monitoring how close various subsystems are to completion.
 * Scan Code
 * Sensor
 * Storage
-* Surface
 * System
 * Timer
 * Touch

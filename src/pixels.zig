@@ -700,6 +700,11 @@ pub const Colorspace = struct {
 	}
 };
 
+/// Raw pixel value.
+pub const Pixel = struct {
+	value: u32,
+};
+
 /// Details about the format of a pixel.
 pub const FormatDetails = struct {
 	format: ?Format,
@@ -764,7 +769,7 @@ pub const FormatDetails = struct {
 		r: u8,
 		g: u8,
 		b: u8,
-	) u32 {
+	) Pixel {
 		const self_sdl: C.SDL_PixelFormatDetails = self.toSdl();
 		const ret = C.SDL_MapRGB(
 			&self_sdl,
@@ -773,7 +778,7 @@ pub const FormatDetails = struct {
 			@intCast(g),
 			@intCast(b),
 		);
-		return @intCast(ret);
+		return Pixel{ .value = ret };
 	}
 
 	/// Map an RGBA quadruple to a transparent pixel value for a given pixel format.
@@ -784,7 +789,7 @@ pub const FormatDetails = struct {
 		g: u8,
 		b: u8,
 		a: u8,
-	) u32 {
+	) Pixel {
 		const self_sdl: C.SDL_PixelFormatDetails = self.toSdl();
 		const ret = C.SDL_MapRGBA(
 			&self_sdl,
@@ -794,13 +799,13 @@ pub const FormatDetails = struct {
 			@intCast(b),
 			@intCast(a),
 		);
-		return @intCast(ret);
+		return Pixel{ .value = ret };
 	}
 
 	/// Get RGB values from a pixel in the specified format.
 	pub fn getRgb(
 		self: FormatDetails,
-		pixel: u32,
+		pixel: Pixel,
 		palette: ?Palette,
 	) struct { r: u8, g: u8, b: u8 } {
 		const self_sdl: C.SDL_PixelFormatDetails = self.toSdl();
@@ -808,7 +813,7 @@ pub const FormatDetails = struct {
 		var g: u8 = undefined;
 		var b: u8 = undefined;
 		const ret = C.SDL_GetRGB(
-			@intCast(pixel),
+			@intCast(pixel.value),
 			&self_sdl,
 			if (palette == null) null else palette.value,
 			&r,
@@ -822,7 +827,7 @@ pub const FormatDetails = struct {
 	/// Get RGBA values from a pixel in the specified format.
 	pub fn getRgba(
 		self: FormatDetails,
-		pixel: u32,
+		pixel: Pixel,
 		palette: ?Palette,
 	) struct { r: u8, g: u8, b: u8, a: u8 } {
 		const self_sdl: C.SDL_PixelFormatDetails = self.toSdl();
@@ -831,7 +836,7 @@ pub const FormatDetails = struct {
 		var b: u8 = undefined;
 		var a: u8 = undefined;
 		const ret = C.SDL_GetRGBA(
-			@intCast(pixel),
+			@intCast(pixel.value),
 			&self_sdl,
 			if (palette == null) null else palette.value,
 			&r,

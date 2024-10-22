@@ -199,6 +199,10 @@ fn sdlTypeToTrueSdlType(allocator: std.mem.Allocator, sdl: []const u8, sdl_types
     if (std.mem.eql(u8, sdl, "void"))
         return "void";
 
+    // Zig int.
+    if (std.mem.eql(u8, sdl, "f32") or std.mem.eql(u8, sdl, "i64") or std.mem.eql(u8, sdl, "u5") or std.mem.eql(u8, sdl, "u6") or std.mem.eql(u8, sdl, "u8") or std.mem.eql(u8, sdl, "u31") or std.mem.eql(u8, sdl, "u32") or std.mem.eql(u8, sdl, "u64") or std.mem.eql(u8, sdl, "usize"))
+        return sdl;
+
     // Size pointer.
     if (std.mem.eql(u8, sdl, "*usize"))
         return "*usize";
@@ -262,7 +266,7 @@ fn sdlTypeToZigType(
         return "i32";
 
     // Zig int.
-    if (std.mem.eql(u8, sdl, "f32") or std.mem.eql(u8, sdl, "i64") or std.mem.eql(u8, sdl, "u5") or std.mem.eql(u8, sdl, "u6") or std.mem.eql(u8, sdl, "u8") or std.mem.eql(u8, sdl, "u31") or std.mem.eql(u8, sdl, "u32") or std.mem.eql(u8, sdl, "usize"))
+    if (std.mem.eql(u8, sdl, "f32") or std.mem.eql(u8, sdl, "i64") or std.mem.eql(u8, sdl, "u5") or std.mem.eql(u8, sdl, "u6") or std.mem.eql(u8, sdl, "u8") or std.mem.eql(u8, sdl, "u31") or std.mem.eql(u8, sdl, "u32") or std.mem.eql(u8, sdl, "u64") or std.mem.eql(u8, sdl, "usize"))
         return sdl;
 
     // Bool.
@@ -318,7 +322,7 @@ fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: 
         return std.fmt.allocPrint(allocator, "if ({s}) |str_capture| str_capture.ptr else null", .{val});
 
     // Int, just cast it.
-    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "i64") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32") or std.mem.eql(u8, sdlType, "usize"))
+    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "i64") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32") or std.mem.eql(u8, sdlType, "u64") or std.mem.eql(u8, sdlType, "usize"))
         return std.fmt.allocPrint(allocator, "@intCast({s})", .{val});
 
     // Float, just cast it.
@@ -383,7 +387,7 @@ fn convertSdlValueToZig(
         return val;
 
     // Int, just cast it.
-    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32"))
+    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32") or std.mem.eql(u8, sdlType, "u64"))
         return std.fmt.allocPrint(allocator, "@intCast({s})", .{val});
 
     // Void pointer idk.

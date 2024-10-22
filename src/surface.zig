@@ -469,6 +469,20 @@ pub const Surface = struct {
 		return Surface{ .value = ret };
 	}
 
+	/// Copy an existing surface to a new surface of the specified format.
+	pub fn convert(
+		self: Surface,
+		format: pixels.Format,
+	) !Surface {
+		const ret = C.SDL_ConvertSurface(
+			self.value,
+			format.value,
+		);
+		if (ret == null)
+			return error.SdlError;
+		return Surface{ .value = ret };
+	}
+
 	/// Get the surface flags.
     pub fn getFlags(
         self: Surface,

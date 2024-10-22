@@ -19,6 +19,7 @@ For monitoring how close various subsystems are to completion.
 * Properties
 * Rect
 * Time
+* Timer
 * Version
 
 ## In Progress
@@ -49,7 +50,6 @@ For monitoring how close various subsystems are to completion.
 * Sensor
 * Storage
 * System
-* Timer
 * Touch
 * Video
 * Vulkan

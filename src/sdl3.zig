@@ -14,6 +14,7 @@ pub const PowerState = @import("power.zig").PowerState;
 pub const properties = @import("properties.zig");
 pub const surface = @import("surface.zig");
 pub const time = @import("time.zig");
+pub const timer = @import("timer.zig");
 pub const Version = @import("version.zig").Version;
 
 pub const rect = @import("rect.zig");

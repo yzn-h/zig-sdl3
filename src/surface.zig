@@ -9,6 +9,85 @@ pub const ScaleMode = enum(c_uint) {
 	Nearest = C.SDL_SCALEMODE_NEAREST,
 	/// Linear pixel sampling.
 	Linear = C.SDL_SCALEMODE_LINEAR,
+
+	/// Copy a block of pixels of one format to another format.
+	pub fn convertPixels(
+		width: u31,
+		height: u31,
+		src_format: pixels.Format,
+		src: []const u8,
+		dst_format: pixels.Format,
+		dst: []const u8,
+	) !void {
+		const ret = C.SDL_ConvertPixels(
+			@intCast(width),
+			@intCast(height),
+			src_format.value,
+			src.ptr,
+			@intCast(src.len / height),
+			dst_format.value,
+			dst.ptr,
+			@intCast(dst.len / height),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Copy a block of pixels of one format and colorspace to another format and colorspace.
+	pub fn convertPixelsAndColorspace(
+		width: u31,
+		height: u31,
+		src_format: pixels.Format,
+		src_colorspace: pixels.Colorspace,
+		src_properties: properties.Group,
+		src: []const u8,
+		dst_format: pixels.Format,
+		dst_colorspace: pixels.Colorspace,
+		dst_properties: properties.Group,
+		dst: []const u8,
+	) !void {
+		const ret = C.SDL_ConvertPixelsAndColorspace(
+			@intCast(width),
+			@intCast(height),
+			src_format.value,
+			src_colorspace.value,
+			src_properties.value,
+			src.ptr,
+			@intCast(src.len / height),
+			dst_format.value,
+			dst_colorspace.value,
+			dst_properties.value,
+			dst.ptr,
+			@intCast(dst.len / height),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Premultiply the alpha on a block of pixels.
+	pub fn premultiplyAlpha(
+		width: u31,
+		height: u31,
+		src_format: pixels.Format,
+		src: []const u8,
+		dst_format: pixels.Format,
+		dst: []const u8,
+		linear: bool,
+	) !void {
+		const ret = C.SDL_PremultiplyAlpha(
+			@intCast(width),
+			@intCast(height),
+			src_format.value,
+			src.ptr,
+			@intCast(src.len / height),
+			dst_format.value,
+			dst.ptr,
+			@intCast(dst.len / height),
+			linear,
+		);
+		if (!ret)
+			return error.SdlError;
+	}
 };
 
 /// The flipping mode.
@@ -403,7 +482,7 @@ pub const Surface = struct {
 		self: Surface,
 		val: ?rect.IRect,
 	) !void {
-		const val_sdl: ?C.SDL_Rect = if (val == null) null else val.toSdl();
+		const val_sdl: ?C.SDL_Rect = if (val == null) null else val.?.toSdl();
 		const ret = C.SDL_SetSurfaceClipRect(
 			self.value,
 			if (val_sdl == null) null else &(val_sdl.?),
@@ -470,7 +549,7 @@ pub const Surface = struct {
 	}
 
 	/// Copy an existing surface to a new surface of the specified format.
-	pub fn convert(
+	pub fn convertFormat(
 		self: Surface,
 		format: pixels.Format,
 	) !Surface {
@@ -481,6 +560,71 @@ pub const Surface = struct {
 		if (ret == null)
 			return error.SdlError;
 		return Surface{ .value = ret };
+	}
+
+	/// Copy an existing surface to a new surface of the specified format and colorspace.
+	pub fn convertFormatAndColorspace(
+		self: Surface,
+		format: pixels.Format,
+		palette: ?pixels.Palette,
+		colorspace: pixels.Colorspace,
+		color_properties: properties.Group,
+	) !Surface {
+		const ret = C.SDL_ConvertSurfaceAndColorspace(
+			self.value,
+			format.value,
+			if (palette == null) null else palette.value,
+			colorspace.value,
+			color_properties.value,
+		);
+		if (ret == null)
+			return error.SdlError;
+		return Surface{ .value = ret };
+	}
+
+	/// Premultiply the alpha in a surface.
+	pub fn premultiplySurfaceAlpha(
+		self: Surface,
+		linear: bool,
+	) !void {
+		const ret = C.SDL_PremultiplySurfaceAlpha(
+			self.value,
+			linear,
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Clear a surface with a specific color, with floating point precision.
+	pub fn clear(
+		self: Surface,
+		color: pixels.FColor,
+	) !void {
+		const ret = C.SDL_ClearSurface(
+			self.value,
+			color.r,
+			color.g,
+			color.b,
+			color.a,
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Perform a fast fill of a rectangle with a specific color.
+	pub fn fillRect(
+		self: Surface,
+		val: ?rect.IRect,
+		color: pixels.Pixel,
+	) !void {
+		const val_sdl: ?C.SDL_Rect = if (val == null) null else val.?.toSdl();
+		const ret = C.SDL_FillSurfaceRect(
+			self.value,
+			if (val_sdl == null) null else &(val_sdl.?),
+			color.value,
+		);
+		if (!ret)
+			return error.SdlError;
 	}
 
 	/// Get the surface flags.

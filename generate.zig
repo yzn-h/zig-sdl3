@@ -1212,7 +1212,7 @@ fn writeFunction(
                 try std.fmt.allocPrint(allocator, "{s}_sdl", .{arg.name}),
                 if (sdl_types.get(arg.type) != null) try std.fmt.allocPrint(allocator, "C.{s}", .{arg.type}) else arg.type,
                 arg.name,
-                try convertZigValueToSdl(allocator, arg.name, arg.type, sdl_types),
+                try convertZigValueToSdl(allocator, try std.fmt.allocPrint(allocator, "{s}.?", .{arg.name}), arg.type, sdl_types),
             });
         }
     }

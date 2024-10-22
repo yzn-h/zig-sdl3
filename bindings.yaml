@@ -3107,7 +3107,156 @@ Subsystems:
           - ZigValue: Linear
             SdlValue: $SDL.SDL_SCALEMODE_LINEAR
             Comment: "Linear pixel sampling."
-        Functions: []
+        Functions:
+          - SdlName: SDL_ConvertPixels
+            ZigName: convertPixels
+            Comment: "Copy a block of pixels of one format to another format."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: width
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: height
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: src_format
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+              - Name: src
+                Type: "[]const u8"
+                Value: src.ptr
+                Mode: verbatim
+              - Name: src_pitch
+                Type: null
+                Value: "@intCast(src.len / height)"
+                Mode: null
+              - Name: dst_format
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+              - Name: dst
+                Type: "[]const u8"
+                Value: dst.ptr
+                Mode: verbatim
+              - Name: dst_pitch
+                Type: null
+                Value: "@intCast(dst.len / height)"
+                Mode: null
+          - SdlName: SDL_ConvertPixelsAndColorspace
+            ZigName: convertPixelsAndColorspace
+            Comment: "Copy a block of pixels of one format and colorspace to another format and colorspace."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: width
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: height
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: src_format
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+              - Name: src_colorspace
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+              - Name: src_properties
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+              - Name: src
+                Type: "[]const u8"
+                Value: src.ptr
+                Mode: verbatim
+              - Name: src_pitch
+                Type: null
+                Value: "@intCast(src.len / height)"
+                Mode: null
+              - Name: dst_format
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+              - Name: dst_colorspace
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+              - Name: dst_properties
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+              - Name: dst
+                Type: "[]const u8"
+                Value: dst.ptr
+                Mode: verbatim
+              - Name: dst_pitch
+                Type: null
+                Value: "@intCast(dst.len / height)"
+                Mode: null
+          - SdlName: SDL_PremultiplyAlpha
+            ZigName: premultiplyAlpha
+            Comment: "Premultiply the alpha on a block of pixels."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: width
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: height
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: src_format
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+              - Name: src
+                Type: "[]const u8"
+                Value: src.ptr
+                Mode: verbatim
+              - Name: src_pitch
+                Type: null
+                Value: "@intCast(src.len / height)"
+                Mode: null
+              - Name: dst_format
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+              - Name: dst
+                Type: "[]const u8"
+                Value: dst.ptr
+                Mode: verbatim
+              - Name: dst_pitch
+                Type: null
+                Value: "@intCast(dst.len / height)"
+                Mode: null
+              - Name: linear
+                Type: bool
+                Value: null
+                Mode: null
       - SdlType: SDL_FlipMode
         ZigType: FlipMode
         InternalType: c_uint
@@ -3761,7 +3910,7 @@ Subsystems:
                 Value: null
                 Mode: null
           - SdlName: SDL_ConvertSurface
-            ZigName: convert
+            ZigName: convertFormat
             Comment: "Copy an existing surface to a new surface of the specified format."
             Return:
               Sdl: SDL_Surface
@@ -3777,6 +3926,110 @@ Subsystems:
                 Mode: null
               - Name: format
                 Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+          - SdlName: SDL_ConvertSurfaceAndColorspace
+            ZigName: convertFormatAndColorspace
+            Comment: "Copy an existing surface to a new surface of the specified format and colorspace."
+            Return:
+              Sdl: SDL_Surface
+              Zig: "!Surface"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: null
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: format
+                Type: SDL_PixelFormat
+                Value: null
+                Mode: null
+              - Name: palette
+                Type: ?SDL_Palette
+                Value: null
+                Mode: null
+              - Name: colorspace
+                Type: SDL_Colorspace
+                Value: null
+                Mode: null
+              - Name: color_properties
+                Type: SDL_PropertiesID
+                Value: null
+                Mode: null
+          - SdlName: SDL_PremultiplySurfaceAlpha
+            ZigName: premultiplySurfaceAlpha
+            Comment: "Premultiply the alpha in a surface."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: linear
+                Type: bool
+                Value: null
+                Mode: null
+          - SdlName: SDL_ClearSurface
+            ZigName: clear
+            Comment: "Clear a surface with a specific color, with floating point precision."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: color
+                Type: SDL_FColor
+                Value: color.r
+                Mode: null
+              - Name: color
+                Type: null
+                Value: color.g
+                Mode: null
+              - Name: color
+                Type: null
+                Value: color.b
+                Mode: null
+              - Name: color
+                Type: null
+                Value: color.a
+                Mode: null
+          - SdlName: SDL_FillSurfaceRect
+            ZigName: fillRect
+            Comment: "Perform a fast fill of a rectangle with a specific color."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: val
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+              - Name: color
+                Type: SDL_Pixel
                 Value: null
                 Mode: null
         CustomFunctions:

@@ -26,6 +26,7 @@ For monitoring how close various subsystems are to completion.
 * Hints
 * Message Box
 * Surface
+* Video
 
 ## Not Started
 * Audio
@@ -51,7 +52,6 @@ For monitoring how close various subsystems are to completion.
 * Storage
 * System
 * Touch
-* Video
 * Vulkan
 
 ## Not Applicable

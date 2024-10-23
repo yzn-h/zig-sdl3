@@ -16,6 +16,7 @@ pub const surface = @import("surface.zig");
 pub const time = @import("time.zig");
 pub const timer = @import("timer.zig");
 pub const Version = @import("version.zig").Version;
+pub const video = @import("video.zig");
 
 pub const rect = @import("rect.zig");
 pub const Stream = @import("io_stream.zig").Stream;

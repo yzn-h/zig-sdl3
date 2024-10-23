@@ -627,6 +627,297 @@ pub const Surface = struct {
 			return error.SdlError;
 	}
 
+	/// Perform a fast fill of a set of rectangles with a specific color.
+	pub fn fillRects(
+		self: Surface,
+		rects: []rect.Rect(c_int),
+		color: pixels.Pixel,
+	) !void {
+		const ret = C.SDL_FillSurfaceRects(
+			self.value,
+			@ptrCast(rects.ptr),
+			@intCast(rects.len),
+			color.value,
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Performs a fast blit from the source surface to the destination surface.
+	pub fn blit(
+		self: Surface,
+		area_to_copy: ?rect.IRect,
+		dest: rect.IRect,
+		area_to_copy_to: ?rect.IRect,
+	) !void {
+		const area_to_copy_sdl: ?C.SDL_Rect = if (area_to_copy == null) null else area_to_copy.?.toSdl();
+		const area_to_copy_to_sdl: ?C.SDL_Rect = if (area_to_copy_to == null) null else area_to_copy_to.?.toSdl();
+		const ret = C.SDL_BlitSurface(
+			self.value,
+			if (area_to_copy_sdl == null) null else &(area_to_copy_sdl.?),
+			dest.toSdl(),
+			if (area_to_copy_to_sdl == null) null else &(area_to_copy_to_sdl.?),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Perform low-level surface blitting only, assumes surface rectangles have already been clipped.
+	pub fn blitUnchecked(
+		self: Surface,
+		area_to_copy: rect.IRect,
+		dest: rect.IRect,
+		area_to_copy_to: rect.IRect,
+	) !void {
+		const area_to_copy_sdl: C.SDL_Rect = area_to_copy.toSdl();
+		const area_to_copy_to_sdl: C.SDL_Rect = area_to_copy_to.toSdl();
+		const ret = C.SDL_BlitSurfaceUnchecked(
+			self.value,
+			&area_to_copy_sdl,
+			dest.toSdl(),
+			&area_to_copy_to_sdl,
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Perform a scaled blit to a destination surface, which may be of a different format.
+	pub fn blitScaled(
+		self: Surface,
+		area_to_copy: ?rect.IRect,
+		dest: rect.IRect,
+		area_to_copy_to: ?rect.IRect,
+		scale_mode: ScaleMode,
+	) !void {
+		const area_to_copy_sdl: ?C.SDL_Rect = if (area_to_copy == null) null else area_to_copy.?.toSdl();
+		const area_to_copy_to_sdl: ?C.SDL_Rect = if (area_to_copy_to == null) null else area_to_copy_to.?.toSdl();
+		const ret = C.SDL_BlitSurfaceScaled(
+			self.value,
+			if (area_to_copy_sdl == null) null else &(area_to_copy_sdl.?),
+			dest.toSdl(),
+			if (area_to_copy_to_sdl == null) null else &(area_to_copy_to_sdl.?),
+			@intFromEnum(scale_mode),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Perform low-level surface scaled blitting only, assumes surface rectangles have already been clipped.
+	pub fn blitScaledUnchecked(
+		self: Surface,
+		area_to_copy: rect.IRect,
+		dest: rect.IRect,
+		area_to_copy_to: rect.IRect,
+		scale_mode: ScaleMode,
+	) !void {
+		const area_to_copy_sdl: C.SDL_Rect = area_to_copy.toSdl();
+		const area_to_copy_to_sdl: C.SDL_Rect = area_to_copy_to.toSdl();
+		const ret = C.SDL_BlitSurfaceUncheckedScaled(
+			self.value,
+			&area_to_copy_sdl,
+			dest.toSdl(),
+			&area_to_copy_to_sdl,
+			@intFromEnum(scale_mode),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Perform a tiled blit to a destination surface, which may be of a different format.
+	pub fn blitTiled(
+		self: Surface,
+		area_to_copy: ?rect.IRect,
+		dest: rect.IRect,
+		area_to_copy_to: ?rect.IRect,
+	) !void {
+		const area_to_copy_sdl: ?C.SDL_Rect = if (area_to_copy == null) null else area_to_copy.?.toSdl();
+		const area_to_copy_to_sdl: ?C.SDL_Rect = if (area_to_copy_to == null) null else area_to_copy_to.?.toSdl();
+		const ret = C.SDL_BlitSurfaceTiled(
+			self.value,
+			if (area_to_copy_sdl == null) null else &(area_to_copy_sdl.?),
+			dest.toSdl(),
+			if (area_to_copy_to_sdl == null) null else &(area_to_copy_to_sdl.?),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Perform a scaled and tiled blit to a destination surface, which may be of a different format.
+	pub fn blitTiledWithScale(
+		self: Surface,
+		area_to_copy: ?rect.IRect,
+		scale_amount: f32,
+		scale_mode: ScaleMode,
+		dest: rect.IRect,
+		area_to_copy_to: ?rect.IRect,
+	) !void {
+		const area_to_copy_sdl: ?C.SDL_Rect = if (area_to_copy == null) null else area_to_copy.?.toSdl();
+		const area_to_copy_to_sdl: ?C.SDL_Rect = if (area_to_copy_to == null) null else area_to_copy_to.?.toSdl();
+		const ret = C.SDL_BlitSurfaceTiledWithScale(
+			self.value,
+			if (area_to_copy_sdl == null) null else &(area_to_copy_sdl.?),
+			@floatCast(scale_amount),
+			@intFromEnum(scale_mode),
+			dest.toSdl(),
+			if (area_to_copy_to_sdl == null) null else &(area_to_copy_to_sdl.?),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Perform a scaled blit using the 9-grid algorithm to a destination surface, which may be of a different format.
+	pub fn blit9Grid(
+		self: Surface,
+		area_to_copy: ?rect.IRect,
+		left_width: u31,
+		right_width: u31,
+		top_height: u31,
+		bottom_height: u31,
+		scale_amount: f32,
+		scale_mode: ScaleMode,
+		dest: rect.IRect,
+		area_to_copy_to: ?rect.IRect,
+	) !void {
+		const area_to_copy_sdl: ?C.SDL_Rect = if (area_to_copy == null) null else area_to_copy.?.toSdl();
+		const area_to_copy_to_sdl: ?C.SDL_Rect = if (area_to_copy_to == null) null else area_to_copy_to.?.toSdl();
+		const ret = C.SDL_BlitSurface9Grid(
+			self.value,
+			if (area_to_copy_sdl == null) null else &(area_to_copy_sdl.?),
+			@intCast(left_width),
+			@intCast(right_width),
+			@intCast(top_height),
+			@intCast(bottom_height),
+			@floatCast(scale_amount),
+			@intFromEnum(scale_mode),
+			dest.toSdl(),
+			if (area_to_copy_to_sdl == null) null else &(area_to_copy_to_sdl.?),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Map an RGB triple to an opaque pixel value for a surface.
+	pub fn mapRgb(
+		self: Surface,
+		r: u8,
+		g: u8,
+		b: u8,
+	) pixels.Pixel {
+		const ret = C.SDL_MapSurfaceRGB(
+			self.value,
+			@intCast(r),
+			@intCast(g),
+			@intCast(b),
+		);
+		return pixels.Pixel{ .value = ret };
+	}
+
+	/// Map an RGBA quadruple to a pixel value for a surface.
+	pub fn mapRgba(
+		self: Surface,
+		r: u8,
+		g: u8,
+		b: u8,
+		a: u8,
+	) pixels.Pixel {
+		const ret = C.SDL_MapSurfaceRGBA(
+			self.value,
+			@intCast(r),
+			@intCast(g),
+			@intCast(b),
+			@intCast(a),
+		);
+		return pixels.Pixel{ .value = ret };
+	}
+
+	/// Retrieves a single pixel from a surface. Is better for correctness, not speed. Best for testing.
+	pub fn readPixel(
+		self: Surface,
+		x: u31,
+		y: u31,
+	) !pixels.Color {
+		var r: u8 = undefined;
+		var g: u8 = undefined;
+		var b: u8 = undefined;
+		var a: u8 = undefined;
+		const ret = C.SDL_ReadSurfacePixel(
+			self.value,
+			@intCast(x),
+			@intCast(y),
+			&r,
+			&g,
+			&b,
+			&a,
+		);
+		if (!ret)
+			return error.SdlError;
+		return .{ .r = r, .g = g, .b = b, .a = a };
+	}
+
+	/// Retrieves a single pixel from a surface. Is better for correctness, not speed. Best for testing.
+	pub fn readPixelFloat(
+		self: Surface,
+		x: u31,
+		y: u31,
+	) !pixels.FColor {
+		var r: f32 = undefined;
+		var g: f32 = undefined;
+		var b: f32 = undefined;
+		var a: f32 = undefined;
+		const ret = C.SDL_ReadSurfacePixelFloat(
+			self.value,
+			@intCast(x),
+			@intCast(y),
+			&r,
+			&g,
+			&b,
+			&a,
+		);
+		if (!ret)
+			return error.SdlError;
+		return .{ .r = r, .g = g, .b = b, .a = a };
+	}
+
+	/// Writes a single pixel to a surface. Is better for correctness, not speed. Best for testing.
+	pub fn writePixel(
+		self: Surface,
+		x: u31,
+		y: u31,
+		color: pixels.Color,
+	) !void {
+		const ret = C.SDL_WriteSurfacePixel(
+			self.value,
+			@intCast(x),
+			@intCast(y),
+			color.r,
+			color.g,
+			color.b,
+			color.a,
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
+	/// Writes a single pixel to a surface. Is better for correctness, not speed. Best for testing.
+	pub fn writePixelFloat(
+		self: Surface,
+		x: u31,
+		y: u31,
+		color: pixels.FColor,
+	) !void {
+		const ret = C.SDL_WriteSurfacePixelFloat(
+			self.value,
+			@intCast(x),
+			@intCast(y),
+			color.r,
+			color.g,
+			color.b,
+			color.a,
+		);
+		if (!ret)
+			return error.SdlError;
+	}
+
 	/// Get the surface flags.
     pub fn getFlags(
         self: Surface,

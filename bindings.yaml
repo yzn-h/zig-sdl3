@@ -3360,7 +3360,7 @@ Subsystems:
                 Type: SDL_Surface
                 Value: null
                 Mode: null
-# TODO: GETTERS AND SETTERS FOR EACH PROPERTY!
+# TODO: PROPERTIES!!!
           - SdlName: SDL_SetSurfaceColorspace
             ZigName: setColorspace
             Comment: "Set the colorspace used by a surface."
@@ -4031,6 +4031,472 @@ Subsystems:
               - Name: color
                 Type: SDL_Pixel
                 Value: null
+                Mode: null
+          - SdlName: SDL_FillSurfaceRects
+            ZigName: fillRects
+            Comment: "Perform a fast fill of a set of rectangles with a specific color."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: rects
+                Type: "[]rect.Rect(c_int)"
+                Value: "@ptrCast(rects.ptr)"
+                Mode: verbatim
+              - Name: count
+                Type: null
+                Value: "@intCast(rects.len)"
+                Mode: null
+              - Name: color
+                Type: SDL_Pixel
+                Value: null
+                Mode: null
+          - SdlName: SDL_BlitSurface
+            ZigName: blit
+            Comment: "Performs a fast blit from the source surface to the destination surface."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: area_to_copy
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+              - Name: dest
+                Type: SDL_Rect
+                Value: null
+                Mode: null
+              - Name: area_to_copy_to
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+          - SdlName: SDL_BlitSurfaceUnchecked
+            ZigName: blitUnchecked
+            Comment: "Perform low-level surface blitting only, assumes surface rectangles have already been clipped."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: area_to_copy
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConst
+              - Name: dest
+                Type: SDL_Rect
+                Value: null
+                Mode: null
+              - Name: area_to_copy_to
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConst
+          - SdlName: SDL_BlitSurfaceScaled
+            ZigName: blitScaled
+            Comment: "Perform a scaled blit to a destination surface, which may be of a different format."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: area_to_copy
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+              - Name: dest
+                Type: SDL_Rect
+                Value: null
+                Mode: null
+              - Name: area_to_copy_to
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+              - Name: scale_mode
+                Type: SDL_ScaleMode
+                Value: null
+                Mode: null
+          - SdlName: SDL_BlitSurfaceUncheckedScaled
+            ZigName: blitScaledUnchecked
+            Comment: "Perform low-level surface scaled blitting only, assumes surface rectangles have already been clipped."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: area_to_copy
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConst
+              - Name: dest
+                Type: SDL_Rect
+                Value: null
+                Mode: null
+              - Name: area_to_copy_to
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConst
+              - Name: scale_mode
+                Type: SDL_ScaleMode
+                Value: null
+                Mode: null
+          - SdlName: SDL_BlitSurfaceTiled
+            ZigName: blitTiled
+            Comment: "Perform a tiled blit to a destination surface, which may be of a different format."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: area_to_copy
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+              - Name: dest
+                Type: SDL_Rect
+                Value: null
+                Mode: null
+              - Name: area_to_copy_to
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+          - SdlName: SDL_BlitSurfaceTiledWithScale
+            ZigName: blitTiledWithScale
+            Comment: "Perform a scaled and tiled blit to a destination surface, which may be of a different format."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: area_to_copy
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+              - Name: scale_amount
+                Type: f32
+                Value: null
+                Mode: null
+              - Name: scale_mode
+                Type: SDL_ScaleMode
+                Value: null
+                Mode: null
+              - Name: dest
+                Type: SDL_Rect
+                Value: null
+                Mode: null
+              - Name: area_to_copy_to
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+          - SdlName: SDL_BlitSurface9Grid
+            ZigName: blit9Grid
+            Comment: "Perform a scaled blit using the 9-grid algorithm to a destination surface, which may be of a different format."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: area_to_copy
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+              - Name: left_width
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: right_width
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: top_height
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: bottom_height
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: scale_amount
+                Type: f32
+                Value: null
+                Mode: null
+              - Name: scale_mode
+                Type: SDL_ScaleMode
+                Value: null
+                Mode: null
+              - Name: dest
+                Type: SDL_Rect
+                Value: null
+                Mode: null
+              - Name: area_to_copy_to
+                Type: SDL_Rect
+                Value: null
+                Mode: convertSdlConstNullable
+          - SdlName: SDL_MapSurfaceRGB
+            ZigName: mapRgb
+            Comment: "Map an RGB triple to an opaque pixel value for a surface."
+            Return:
+              Sdl: SDL_Pixel
+              Zig: pixels.Pixel
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: r
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: g
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: b
+                Type: u8
+                Value: null
+                Mode: null
+          - SdlName: SDL_MapSurfaceRGBA
+            ZigName: mapRgba
+            Comment: "Map an RGBA quadruple to a pixel value for a surface."
+            Return:
+              Sdl: SDL_Pixel
+              Zig: pixels.Pixel
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: r
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: g
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: b
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: a
+                Type: u8
+                Value: null
+                Mode: null
+          - SdlName: SDL_ReadSurfacePixel
+            ZigName: readPixel
+            Comment: "Retrieves a single pixel from a surface. Is better for correctness, not speed. Best for testing."
+            Return:
+              Sdl: bool
+              Zig: "!pixels.Color"
+              Convert: ".{ .r = r, .g = g, .b = b, .a = a }"
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: x
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: y
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: r
+                Type: u8
+                Value: "&r"
+                Mode: out
+              - Name: g
+                Type: u8
+                Value: "&g"
+                Mode: out
+              - Name: b
+                Type: u8
+                Value: "&b"
+                Mode: out
+              - Name: a
+                Type: u8
+                Value: "&a"
+                Mode: out
+          - SdlName: SDL_ReadSurfacePixelFloat
+            ZigName: readPixelFloat
+            Comment: "Retrieves a single pixel from a surface. Is better for correctness, not speed. Best for testing."
+            Return:
+              Sdl: bool
+              Zig: "!pixels.FColor"
+              Convert: ".{ .r = r, .g = g, .b = b, .a = a }"
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: x
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: y
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: r
+                Type: f32
+                Value: "&r"
+                Mode: out
+              - Name: g
+                Type: f32
+                Value: "&g"
+                Mode: out
+              - Name: b
+                Type: f32
+                Value: "&b"
+                Mode: out
+              - Name: a
+                Type: f32
+                Value: "&a"
+                Mode: out
+          - SdlName: SDL_WriteSurfacePixel
+            ZigName: writePixel
+            Comment: "Writes a single pixel to a surface. Is better for correctness, not speed. Best for testing."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: x
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: y
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: color
+                Type: SDL_Color
+                Value: color.r
+                Mode: null
+              - Name: g
+                Type: null
+                Value: color.g
+                Mode: null
+              - Name: b
+                Type: null
+                Value: color.b
+                Mode: null
+              - Name: a
+                Type: null
+                Value: color.a
+                Mode: null
+          - SdlName: SDL_WriteSurfacePixelFloat
+            ZigName: writePixelFloat
+            Comment: "Writes a single pixel to a surface. Is better for correctness, not speed. Best for testing."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Surface
+                Value: null
+                Mode: null
+              - Name: x
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: y
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: color
+                Type: SDL_FColor
+                Value: color.r
+                Mode: null
+              - Name: g
+                Type: null
+                Value: color.g
+                Mode: null
+              - Name: b
+                Type: null
+                Value: color.b
+                Mode: null
+              - Name: a
+                Type: null
+                Value: color.a
                 Mode: null
         CustomFunctions:
           - Code: |

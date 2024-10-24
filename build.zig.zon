@@ -31,11 +31,14 @@
     .paths = .{
         "build.zig",
         "build.zig.zon",
+        "custom",
         "examples",
         "src",
+        "template",
         "bindings.yaml",
         "build.zig",
-        "generate",
+        "generate.zig",
         "LICENSE",
+        "README",
     },
 }

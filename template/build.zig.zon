@@ -4,15 +4,12 @@
     .dependencies = .{
         .sdl3 = .{
             .url = "https://github.com/Gota7/zig-sdl3/archive/refs/heads/master.zip",
-            .hash = "1220c3b9b8c4b1942f7c3678285a4e20301ab5125f8c5dde47118994ae955fc611ff",
+            .hash = "12208c3b7dd5e442e543bb7d456769d94423279a6c423641da6d0127a51c9968392d",
         },
     },
     .paths = .{
         "build.zig",
         "build.zig.zon",
         "src",
-        // For example...
-        //"LICENSE",
-        //"README.md",
     },
 }

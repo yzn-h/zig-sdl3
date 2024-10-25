@@ -56,7 +56,7 @@ pub const BoxFlags = struct {
 
 /// Message box button.
 pub const Button = struct {
-	flags: BoxFlags,
+	flags: BoxFlags = .{},
 	value: i32,
 	text: [:0]const u8,
 
@@ -73,7 +73,7 @@ pub const Button = struct {
 	pub fn toSdl(self: Button) C.SDL_MessageBoxButtonData {
 		return .{
 			.flags = self.flags.toSdl(),
-			.buttonID = @intCast(self.buttonID),
+			.buttonID = @intCast(self.value),
 			.text = self.text,
 		};
 	}
@@ -112,3 +112,120 @@ pub const Color = struct {
         };
     }
 };
+
+/// Display a simple modal message box.
+pub fn showSimple(
+	flags: BoxFlags,
+	title: [:0]const u8,
+	message: [:0]const u8,
+	parent_window: ?video.Window,
+) !void {
+	const ret = C.SDL_ShowSimpleMessageBox(
+		flags.toSdl(),
+		title,
+		message,
+		if (parent_window) |parent_window_val| parent_window_val.value else null,
+	);
+	if (!ret)
+		return error.SdlError;
+}
+
+/// A set of colors to use for message box dialogs.
+pub const ColorScheme = struct {
+    background: Color,
+    text: Color,
+    button_border: Color,
+    button_background: Color,
+    button_selected: Color,
+    /// Convert from an SDL value.
+    pub fn fromSdl(data: C.SDL_MessageBoxColorScheme) ColorScheme {
+        return .{
+            .background = Color.fromSdl(data.colors[C.SDL_MESSAGEBOX_COLOR_BACKGROUND]),
+            .text = Color.fromSdl(data.colors[C.SDL_MESSAGEBOX_COLOR_TEXT]),
+            .button_border = Color.fromSdl(data.colors[C.SDL_MESSAGEBOX_COLOR_BUTTON_BORDER]),
+            .button_background = Color.fromSdl(data.colors[C.SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND]),
+            .button_selected = Color.fromSdl(data.colors[C.SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED]),
+        };
+    }
+    /// Convert to an SDL value.
+    pub fn toSdl(self: ColorScheme) C.SDL_MessageBoxColorScheme {
+        var ret: C.SDL_MessageBoxColorScheme = undefined;
+        ret.colors[C.SDL_MESSAGEBOX_COLOR_BACKGROUND] = self.background.toSdl();
+        ret.colors[C.SDL_MESSAGEBOX_COLOR_TEXT] = self.text.toSdl();
+        ret.colors[C.SDL_MESSAGEBOX_COLOR_BUTTON_BORDER] = self.button_border.toSdl();
+        ret.colors[C.SDL_MESSAGEBOX_COLOR_BUTTON_BACKGROUND] = self.button_background.toSdl();
+        ret.colors[C.SDL_MESSAGEBOX_COLOR_BUTTON_SELECTED] = self.button_selected.toSdl();
+        return ret;
+    }
+};
+
+/// Buttons.
+pub fn Buttons(comptime len: usize) type {
+    return struct {
+        buttons: [len]C.SDL_MessageBoxButtonData,
+        /// Create buttons from zig.
+        pub fn fromZig(buttons: [len]Button) Buttons(len) {
+            var ret: Buttons(len) = undefined;
+            for (0..len) |ind| {
+                ret.buttons[ind] = buttons[ind].toSdl();
+            }
+            return ret;
+        }
+    };
+}
+
+/// Create a modal message box.
+pub fn show(
+    flags: BoxFlags,
+    title: [:0]const u8,
+    message: [:0]const u8,
+    parent_window: ?video.Window,
+    comptime buttons: anytype,
+    color_scheme: ?ColorScheme,
+) !u32 {
+    const button_data = Buttons(buttons.len).fromZig(buttons);
+    const colors: ?C.SDL_MessageBoxColorScheme = if (color_scheme) |val| val.toSdl() else null;
+    const data = C.SDL_MessageBoxData{
+        .buttons = &button_data.buttons,
+        .colorScheme = if (color_scheme) |_| &colors.? else null,
+        .flags = flags.toSdl(),
+        .message = message,
+        .numbuttons = @intCast(buttons.len),
+        .title = title,
+        .window = if (parent_window == null) null else parent_window.?.value,
+    };
+    var button_id: c_int = undefined;
+    const ret = C.SDL_ShowMessageBox(&data, &button_id);
+    if (!ret)
+        return error.SdlError;
+    return @intCast(button_id);
+}
+
+/// Create a modal message box.
+pub fn showWithButtonLen(
+    flags: BoxFlags,
+    title: [:0]const u8,
+    message: [:0]const u8,
+    parent_window: ?video.Window,
+    comptime buttons_len: usize,
+    buttons: Buttons(buttons_len),
+    color_scheme: ?ColorScheme,
+) !u32 {
+    const colors: ?C.SDL_MessageBoxColorScheme = if (color_scheme) |val| val.toSdl() else null;
+    const data = C.SDL_MessageBoxData{
+        .buttons = &buttons.buttons,
+        .colorScheme = if (color_scheme) |_| &colors.? else null,
+        .flags = flags.toSdl(),
+        .message = message,
+        .numbuttons = @intCast(buttons_len),
+        .title = title,
+        .window = if (parent_window == null) null else parent_window.?.value,
+    };
+    var button_id: c_int = undefined;
+    const ret = C.SDL_ShowMessageBox(&data, &button_id);
+    if (!ret)
+        return error.SdlError;
+    return @intCast(button_id);
+}
+
+const video = @import("video.zig");

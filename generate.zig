@@ -336,17 +336,18 @@ fn convertZigValueToSdl(allocator: std.mem.Allocator, val: []const u8, sdlType: 
     // Go through SDL types.
     const found_sdl_type = sdl_types.get(sdlType) orelse sdl_types.get(sdlType[1..]);
     if (found_sdl_type) |sdl_type| {
+        const val_to_use = if (sdlType[0] != '?') val else try std.fmt.allocPrint(allocator, "{s}_val", .{val});
         var ret: []const u8 = switch (sdl_type.type_data) {
             .Callback => |cb| cb.name,
-            .Enum => try std.fmt.allocPrint(allocator, "@intFromEnum({s})", .{val}),
-            .Value => try std.fmt.allocPrint(allocator, "{s}.value", .{val}),
-            .Flag => try std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val}),
-            .StringMap => try std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val}),
-            .Struct => try std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val}),
+            .Enum => try std.fmt.allocPrint(allocator, "@intFromEnum({s})", .{val_to_use}),
+            .Value => try std.fmt.allocPrint(allocator, "{s}.value", .{val_to_use}),
+            .Flag => try std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val_to_use}),
+            .StringMap => try std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val_to_use}),
+            .Struct => try std.fmt.allocPrint(allocator, "{s}.toSdl()", .{val_to_use}),
             .Typedef => val,
         };
         if (sdlType[0] == '?') {
-            ret = try std.fmt.allocPrint(allocator, "if ({s} == null) null else {s}", .{ val, ret });
+            ret = try std.fmt.allocPrint(allocator, "if ({s}) |{s}_val| {s} else null", .{ val, val, ret });
         }
         return ret;
     }
@@ -913,7 +914,7 @@ fn writeStruct(
         try nextLine(writer, indent + 3);
         try writer.print(".{s} = {s},", .{ member.sdlName, if (std.mem.eql(u8, member.toSdlCustom, "null")) try convertZigValueToSdl(
             allocator,
-            try std.fmt.allocPrint(allocator, "self.{s}", .{member.sdlName}),
+            try std.fmt.allocPrint(allocator, "self.{s}", .{member.zigName}),
             member.type,
             sdl_types,
         ) else member.toSdlCustom });

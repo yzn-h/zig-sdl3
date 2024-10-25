@@ -573,7 +573,7 @@ pub const Surface = struct {
 		const ret = C.SDL_ConvertSurfaceAndColorspace(
 			self.value,
 			format.value,
-			if (palette == null) null else palette.value,
+			if (palette) |palette_val| palette_val.value else null,
 			colorspace.value,
 			color_properties.value,
 		);

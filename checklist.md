@@ -5,6 +5,7 @@ For monitoring how close various subsystems are to completion.
 * Errors
 * Init
 * IO Stream
+* Message Box
 * Misc
 
 ## Needs Testing
@@ -24,7 +25,6 @@ For monitoring how close various subsystems are to completion.
 
 ## In Progress
 * Hints
-* Message Box
 * Surface
 * Video
 

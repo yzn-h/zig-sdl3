@@ -748,17 +748,17 @@ pub const FormatDetails = struct {
 			.format = if (self.format == null) C.SDL_PIXELFORMAT_UNKNOWN else self.format,
 			.bits_per_pixel = @intCast(self.bits_per_pixel),
 			.bytes_per_pixel = @intCast(self.bytes_per_pixel),
-			.Rmask = @intCast(self.Rmask),
-			.Gmask = @intCast(self.Gmask),
-			.Bmask = @intCast(self.Bmask),
-			.Rbits = @intCast(self.Rbits),
-			.Gbits = @intCast(self.Gbits),
-			.Bbits = @intCast(self.Bbits),
-			.Abits = @intCast(self.Abits),
-			.Rshift = @intCast(self.Rshift),
-			.Gshift = @intCast(self.Gshift),
-			.Bshift = @intCast(self.Bshift),
-			.Ashift = @intCast(self.Ashift),
+			.Rmask = @intCast(self.r_mask),
+			.Gmask = @intCast(self.g_mask),
+			.Bmask = @intCast(self.b_mask),
+			.Rbits = @intCast(self.r_bits),
+			.Gbits = @intCast(self.g_bits),
+			.Bbits = @intCast(self.b_bits),
+			.Abits = @intCast(self.a_bits),
+			.Rshift = @intCast(self.r_shift),
+			.Gshift = @intCast(self.g_shift),
+			.Bshift = @intCast(self.b_shift),
+			.Ashift = @intCast(self.a_shift),
 		};
 	}
 
@@ -773,7 +773,7 @@ pub const FormatDetails = struct {
 		const self_sdl: C.SDL_PixelFormatDetails = self.toSdl();
 		const ret = C.SDL_MapRGB(
 			&self_sdl,
-			if (palette == null) null else palette.value,
+			if (palette) |palette_val| palette_val.value else null,
 			@intCast(r),
 			@intCast(g),
 			@intCast(b),
@@ -793,7 +793,7 @@ pub const FormatDetails = struct {
 		const self_sdl: C.SDL_PixelFormatDetails = self.toSdl();
 		const ret = C.SDL_MapRGBA(
 			&self_sdl,
-			if (palette == null) null else palette.value,
+			if (palette) |palette_val| palette_val.value else null,
 			@intCast(r),
 			@intCast(g),
 			@intCast(b),
@@ -815,7 +815,7 @@ pub const FormatDetails = struct {
 		const ret = C.SDL_GetRGB(
 			@intCast(pixel.value),
 			&self_sdl,
-			if (palette == null) null else palette.value,
+			if (palette) |palette_val| palette_val.value else null,
 			&r,
 			&g,
 			&b,
@@ -838,7 +838,7 @@ pub const FormatDetails = struct {
 		const ret = C.SDL_GetRGBA(
 			@intCast(pixel.value),
 			&self_sdl,
-			if (palette == null) null else palette.value,
+			if (palette) |palette_val| palette_val.value else null,
 			&r,
 			&g,
 			&b,

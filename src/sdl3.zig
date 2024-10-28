@@ -12,6 +12,7 @@ pub const pen = @import("pen.zig");
 pub const pixels = @import("pixels.zig");
 pub const PowerState = @import("power.zig").PowerState;
 pub const properties = @import("properties.zig");
+pub const sensor = @import("sensor.zig");
 pub const surface = @import("surface.zig");
 pub const time = @import("time.zig");
 pub const timer = @import("timer.zig");

@@ -6,6 +6,7 @@ pub const hints = @import("hints.zig");
 pub const init = @import("init.zig");
 pub const SharedObject = @import("loadso.zig").SharedObject;
 pub const Locale = @import("locale.zig").Locale;
+pub const log = @import("log.zig");
 pub const message_box = @import("message_box.zig");
 pub const openURL = @import("misc.zig").openURL;
 pub const pen = @import("pen.zig");

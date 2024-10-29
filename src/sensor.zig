@@ -79,6 +79,7 @@ pub const ID = struct {
         );
         if (ret == null)
             return error.SdlError;
+        defer C.SDL_free(ret);
         var converted_ret = try allocator.alloc(ID, @intCast(count));
         for (0..count) |ind| {
             converted_ret[ind].value = ret[ind];

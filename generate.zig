@@ -388,7 +388,7 @@ fn convertSdlValueToZig(
         return val;
 
     // Int, just cast it.
-    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32") or std.mem.eql(u8, sdlType, "u64"))
+    if (std.mem.eql(u8, sdlType, "int") or std.mem.eql(u8, sdlType, "u5") or std.mem.eql(u8, sdlType, "u6") or std.mem.eql(u8, sdlType, "u8") or std.mem.eql(u8, sdlType, "u16") or std.mem.eql(u8, sdlType, "u31") or std.mem.eql(u8, sdlType, "u32") or std.mem.eql(u8, sdlType, "u64"))
         return std.fmt.allocPrint(allocator, "@intCast({s})", .{val});
 
     // Float, just cast it.

@@ -1008,6 +1008,39 @@ Subsystems:
             SdlValue: $SDL.SDL_JOYSTICK_CONNECTION_WIRELESS
             Comment: null
         Functions: []
+      - SdlType: SDL_Hat
+        ZigType: Hat
+        InternalType: u8
+        Comment: "Get the current state of a POV hat on a joystick."
+        Values:
+          - ZigValue: Centered
+            SdlValue: $SDL.SDL_HAT_CENTERED
+            Comment: null
+          - ZigValue: Up
+            SdlValue: $SDL.SDL_HAT_UP
+            Comment: null
+          - ZigValue: Right
+            SdlValue: $SDL.SDL_HAT_RIGHT
+            Comment: null
+          - ZigValue: Down
+            SdlValue: $SDL.SDL_HAT_DOWN
+            Comment: null
+          - ZigValue: Left
+            SdlValue: $SDL.SDL_HAT_LEFT
+            Comment: null
+          - ZigValue: RightUp
+            SdlValue: $SDL.SDL_HAT_RIGHTUP
+            Comment: null
+          - ZigValue: RightDown
+            SdlValue: $SDL.SDL_HAT_RIGHTDOWN
+            Comment: null
+          - ZigValue: LeftUp
+            SdlValue: $SDL.SDL_HAT_LEFTUP
+            Comment: null
+          - ZigValue: LeftDown
+            SdlValue: $SDL.SDL_HAT_LEFTDOWN
+            Comment: null
+        Functions: []
     Errors: []
     Values:
       - SdlName: SDL_JoystickID
@@ -1143,6 +1176,34 @@ Subsystems:
               - Name: self
                 Type: SDL_JoystickID
                 Value: null
+                Mode:
+          - SdlName: SDL_DetachVirtualJoystick
+            ZigName: detachVirtual
+            Comment: "Detach a virtual joystick."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_JoystickID
+                Value: null
+                Mode: null
+          - SdlName: SDL_IsJoystickVirtual
+            ZigName: isVirtual
+            Comment: "Query whether or not a joystick is virtual."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_JoystickID
+                Value: null
                 Mode: null
         CustomFunctions:
           - Code: |
@@ -1196,6 +1257,766 @@ Subsystems:
                 Type: u31
                 Value: null
                 Mode: null
+          - SdlName: SDL_SetJoystickVirtualAxis
+            ZigName: setVirtualAxis
+            Comment: "Set the state of an axis on an opened virtual joystick."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: axis_index
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: value
+                Type: i16
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetJoystickVirtualBall
+            ZigName: setVirtualBall
+            Comment: "Generate ball motion on an opened virtual joystick."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: ball_index
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: x_rel
+                Type: i16
+                Value: null
+                Mode: null
+              - Name: y_rel
+                Type: i16
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetJoystickVirtualButton
+            ZigName: setVirtualButton
+            Comment: "Set the state of a button on an opened virtual joystick."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: button_index
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: value
+                Type: bool
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetJoystickVirtualHat
+            ZigName: setVirtualHat
+            Comment: "Set the state of a hat on an opened virtual joystick."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: hat_index
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: value
+                Type: SDL_Hat
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetJoystickVirtualTouchpad
+            ZigName: setVirtualTouchpad
+            Comment: "Set touchpad finger state on an opened virtual joystick."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: touchpad_index
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: finger_index
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: down
+                Type: bool
+                Value: null
+                Mode: null
+              - Name: x
+                Type: f32
+                Value: null
+                Mode: null
+              - Name: y
+                Type: f32
+                Value: null
+                Mode: null
+              - Name: pressure
+                Type: f32
+                Value: null
+                Mode: null
+          - SdlName: SDL_SendJoystickVirtualSensorData
+            ZigName: sendVirtualSensorData
+            Comment: "Send a sensor update for an opened virtual joystick."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: sensor_type
+                Type: SDL_SensorType
+                Value: null
+                Mode: null
+              - Name: sensor_timestamp_nanoseconds
+                Type: u64
+                Value: null
+                Mode: null
+              - Name: data
+                Type: "[]const f32"
+                Value: "data.ptr"
+                Mode: verbatim
+              - Name: num_values
+                Type: null
+                Value: "@intCast(data.len)"
+                Mode: null
+          - SdlName: SDL_GetJoystickProperties
+            ZigName: getProperties
+            Comment: "Get the properties associated with a joystick."
+            Return:
+              Sdl: SDL_PropertiesID
+              Zig: "properties.Group"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: 0
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickName
+            ZigName: getName
+            Comment: "Get the implementation dependent name of a joystick."
+            Return:
+              Sdl: string
+              Zig: "![]const u8"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: null
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickPath
+            ZigName: getPath
+            Comment: "Get the implementation dependent path of a joystick."
+            Return:
+              Sdl: string
+              Zig: "![]const u8"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: null
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickPlayerIndex
+            ZigName: getPlayerIndex
+            Comment: "Get the player index of an opened joystick."
+            Return:
+              Sdl: int
+              Zig: "?u31"
+              Convert: null
+              Checks:
+                - Mode: ReturnNullIfEq
+                  ComparisonVal: -1
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetJoystickPlayerIndex
+            ZigName: setPlayerIndex
+            Comment: "Set the player index of an opened joystick."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: player_index
+                Type: "?u31"
+                Value: "if (player_index) |val| @intCast(val) else -1"
+                Mode: verbatim
+          - SdlName: SDL_GetJoystickGUID
+            ZigName: getGUID
+            Comment: "Get the implementation-dependent GUID for the joystick."
+            Return:
+              Sdl: SDL_GUID
+              Zig: "?guid.GUID"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: std.mem.containsAtLeast(u8, ret.data, ret.data.len, [_]u8{0})
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickVendor
+            ZigName: getVendorID
+            Comment: "Get the USB vendor ID of an opened joystick, if available."
+            Return:
+              Sdl: u16
+              Zig: "?u16"
+              Convert: null
+              Checks:
+                - Mode: ReturnNullIfEq
+                  ComparisonVal: 0
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickProduct
+            ZigName: getProductID
+            Comment: "Get the USB product ID of an opened joystick, if available."
+            Return:
+              Sdl: u16
+              Zig: "?u16"
+              Convert: null
+              Checks:
+                - Mode: ReturnNullIfEq
+                  ComparisonVal: 0
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickProductVersion
+            ZigName: getProductVersion
+            Comment: "Get the product version of an opened joystick, if available."
+            Return:
+              Sdl: u16
+              Zig: "?u16"
+              Convert: null
+              Checks:
+                - Mode: ReturnNullIfEq
+                  ComparisonVal: 0
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickFirmwareVersion
+            ZigName: getFirmwareVersion
+            Comment: "Get the firmware version of an opened joystick, if available."
+            Return:
+              Sdl: u16
+              Zig: "?u16"
+              Convert: null
+              Checks:
+                - Mode: ReturnNullIfEq
+                  ComparisonVal: 0
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickSerial
+            ZigName: getSerial
+            Comment: "Get the serial number of an opened joystick, if available."
+            Return:
+              Sdl: string
+              Zig: "?[]const u8"
+              Convert: null
+              Checks:
+                - Mode: ReturnNullIfEq
+                  ComparisonVal: null
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickType
+            ZigName: getType
+            Comment: "Get the type of an opened joystick."
+            Return:
+              Sdl: SDL_JoystickType
+              Zig: "?Type"
+              Convert: null
+              Checks:
+                - Mode: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_JOYSTICK_TYPE_UNKNOWN
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickGUIDInfo
+            ZigName: getGUIDInfo
+            Comment: "Get the device information encoded in a GUID structure."
+            Return:
+              Sdl: void
+              Zig: |
+                struct { vendor: ?u16, product: ?u16, version: ?u16, crc16: ?u16 }
+              Convert: ".{ .vendor = if (vendor == 0) null else vendor, .product = if (product == 0) null else product, .version = if (version == 0) null else version, .crc16 = if (crc16 == 0) null else crc16 }"
+              Checks: []
+            Arguments:
+              - Name: guid_val
+                Type: SDL_GUID
+                Value: null
+                Mode: null
+              - Name: vendor
+                Type: u16
+                Value: "&vendor"
+                Mode: out
+              - Name: product
+                Type: u16
+                Value: "&product"
+                Mode: out
+              - Name: version
+                Type: u16
+                Value: "&version"
+                Mode: out
+              - Name: crc16
+                Type: u16
+                Value: "&crc16"
+                Mode: out
+          - SdlName: SDL_JoystickConnected
+            ZigName: connected
+            Comment: "Get the status of a specified joystick."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickID
+            ZigName: getID
+            Comment: "Get the instance ID of an opened joystick."
+            Return:
+              Sdl: SDL_JoystickID
+              Zig: "!ID"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: 0
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetNumJoystickAxes
+            ZigName: getNumAxes
+            Comment: "Get the number of general axis controls on a joystick."
+            Return:
+              Sdl: int
+              Zig: "!u31"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: -1
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetNumJoystickBalls
+            ZigName: getNumBalls
+            Comment: "Get the number of trackballs on a joystick."
+            Return:
+              Sdl: int
+              Zig: "!u31"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: -1
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetNumJoystickHats
+            ZigName: getNumHats
+            Comment: "Get the number of POV hats on a joystick."
+            Return:
+              Sdl: int
+              Zig: "!u31"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: -1
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetNumJoystickButtons
+            ZigName: getNumButtons
+            Comment: "Get the number of buttons on a joystick."
+            Return:
+              Sdl: int
+              Zig: "!u31"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: -1
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetJoystickEventsEnabled
+            ZigName: setEventsEnabled
+            Comment: "Set the state of joystick event processing."
+            Return:
+              Sdl: void
+              Zig: void
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: events_enabled
+                Type: bool
+                Value: null
+                Mode: null
+          - SdlName: SDL_JoystickEventsEnabled
+            ZigName: getEventsEnabled
+            Comment: "Query the state of joystick event processing."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments: []
+          - SdlName: SDL_UpdateJoysticks
+            ZigName: update
+            Comment: "Update the current state of the open joysticks."
+            Return:
+              Sdl: void
+              Zig: void
+              Convert: null
+              Checks: []
+            Arguments: []
+          - SdlName: SDL_GetJoystickAxis
+            ZigName: getAxis
+            Comment: "Get the current state of an axis control on a joystick."
+            Return:
+              Sdl: i16
+              Zig: "!i16"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: 0
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: axis_index
+                Type: u31
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickAxisInitialState
+            ZigName: getAxisInitialState
+            Comment: "Get the initial state of an axis control on a joystick."
+            Return:
+              Sdl: bool
+              Zig: |
+                struct { has_initial_state: bool, state: i16 }
+              Convert: .{ .has_initial_state = ret, .state = state }
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: axis_index
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: state
+                Type: i16
+                Value: "&state"
+                Mode: out
+          - SdlName: SDL_GetJoystickBall
+            ZigName: getBall
+            Comment: "Get the ball axis change since the last poll."
+            Return:
+              Sdl: bool
+              Zig: |
+                !struct { dx: i32, dy: i32 }
+              Convert: .{ .dx = @intCast(dx), .dy = @intCast(dy) }
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: ball_index
+                Type: u31
+                Value: null
+                Mode: null
+              - Name: dx
+                Type: i32
+                Value: "&dx"
+                Mode: out
+              - Name: dy
+                Type: i32
+                Value: "&dy"
+                Mode: out
+          - SdlName: SDL_GetJoystickHat
+            ZigName: getHat
+            Comment: "Get the current state of a POV hat on a joystick."
+            Return:
+              Sdl: SDL_Hat
+              Zig: Hat
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: hat_index
+                Type: u31
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickButton
+            ZigName: getButton
+            Comment: "Get the current state of a button on a joystick."
+            Return:
+              Sdl: bool
+              Zig: bool
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: button_index
+                Type: u31
+                Value: null
+                Mode: null
+          - SdlName: SDL_RumbleJoystick
+            ZigName: rumble
+            Comment: "Start a rumble effect."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: left_rumble
+                Type: u16
+                Value: null
+                Mode: null
+              - Name: right_rumble
+                Type: u16
+                Value: null
+                Mode: null
+              - Name: duration_milliseconds
+                Type: u32
+                Value: null
+                Mode: null
+          - SdlName: SDL_RumbleJoystickTriggers
+            ZigName: rumbleTriggers
+            Comment: "Start a rumble effect in the joystick's triggers."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: left_rumble
+                Type: u16
+                Value: null
+                Mode: null
+              - Name: right_rumble
+                Type: u16
+                Value: null
+                Mode: null
+              - Name: duration_milliseconds
+                Type: u32
+                Value: null
+                Mode: null
+          - SdlName: SDL_SetJoystickLED
+            ZigName: setLED
+            Comment: "Update a joystick's LED color."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: r
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: g
+                Type: u8
+                Value: null
+                Mode: null
+              - Name: b
+                Type: u8
+                Value: null
+                Mode: null
+          - SdlName: SDL_SendJoystickEffect
+            ZigName: sendEffect
+            Comment: "Send a joystick specific effect packet."
+            Return:
+              Sdl: bool
+              Zig: "!void"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: false
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: data
+                Type: "[]const u8"
+                Value: "data.ptr"
+                Mode: verbatim
+              - Name: size
+                Type: null
+                Value: "@intCast(data.len)"
+                Mode: null
+          - SdlName: SDL_CloseJoystick
+            ZigName: deinit
+            Comment: "Close a joystick previously opened with init."
+            Return:
+              Sdl: void
+              Zig: void
+              Convert: null
+              Checks: []
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickConnectionState
+            ZigName: getConnectionState
+            Comment: "Get the connection state of a joystick."
+            Return:
+              Sdl: SDL_JoystickConnectionState
+              Zig: "!?ConnectionState"
+              Convert: null
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: $SDL.SDL_JOYSTICK_CONNECTION_INVALID
+                - Mode: ReturnNullIfEq
+                  ComparisonVal: $SDL.SDL_JOYSTICK_CONNECTION_UNKNOWN
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+          - SdlName: SDL_GetJoystickPowerInfo
+            ZigName: getPowerInfo
+            Comment: "Get the battery state of a joystick."
+            Return:
+              Sdl: SDL_PowerState
+              Zig: |
+                !struct { state: power.PowerState, percent: ?u7 }
+              Convert: .{ .state = ret, .percent = if (percent == -1) null else @intCast(percent) }
+              Checks:
+                - Mode: ReturnErrIfEq
+                  ComparisonVal: $SDL.SDL_POWERSTATE_ERROR
+            Arguments:
+              - Name: self
+                Type: SDL_Joystick
+                Value: null
+                Mode: null
+              - Name: percent
+                Type: c_int
+                Value: "&percent"
+                Mode: out
         CustomFunctions: []
     Flags: []
     StringMap: []
@@ -1228,7 +2049,71 @@ Subsystems:
           Convert: null
           Checks: []
         Arguments: []
-    CustomFunctions: []
+    CustomFunctions:
+      - Code: |
+          /// Virtual joystick user data.
+          pub fn VirtualJoystickUserData(comptime UserData: type) type {
+              return struct {
+                  update: *const fn (user_data: *UserData) void,
+                  set_player_index: *const fn (user_data: *UserData, player_index: u31) void,
+                  rumble: *const fn (user_data: *UserData, left_rumble: u16, right_rumble: u16) anyerror!void,
+                  rumble_triggers: *const fn (user_data: *UserData, left_rumble: u16, right_rumble: u16) anyerror!void,
+                  set_led: *const fn (user_data: *UserData, r: u8, g: u8, b: u8) anyerror!void,
+                  send_effect: *const fn (user_data: *UserData, data: []const u8) anyerror!void,
+                  set_sensors_enabled: *const fn (user_data: *UserData, enabled: bool) anyerror!void,
+                  cleanup: *const fn (user_data: *UserData) void,
+                  user_data: *UserData,
+              };
+          }
+
+          fn virtualJoystickCleanup(user_data: ?*anyopaque) callconv(.C) void {
+              const data: VirtualJoystickUserData(anyopaque) = @ptrCast(@alignCast(user_data));
+              data.cleanup(data.user_data);
+          }
+
+          fn virtualJoystickRumble(user_data: ?*anyopaque, left_rumble: u16, right_rumble: u16) callconv(.C) bool {
+              const data: VirtualJoystickUserData(anyopaque) = @ptrCast(@alignCast(user_data));
+              data.rumble(data.user_data, left_rumble, right_rumble) catch return false;
+              return true;
+          }
+
+          fn virtualJoystickRumbleTriggers(user_data: ?*anyopaque, left_rumble: u16, right_rumble: u16) callconv(.C) bool {
+              const data: VirtualJoystickUserData(anyopaque) = @ptrCast(@alignCast(user_data));
+              data.rumble_triggers(data.user_data, left_rumble, right_rumble) catch return false;
+              return true;
+          }
+
+          /// Virtual joystick configuration.
+          pub fn VirtualJoystick(comptime UserData: type) type {
+              return struct {
+                  joystick_type: Type,
+                  vendor_id: u16,
+                  product_id: u16,
+                  num_axes: u16,
+                  num_buttons: u16,
+                  num_balls: u16,
+                  num_hats: u16,
+                  // button_mask
+                  // axis_mask
+                  name: [:0]const u8,
+                  touchpads: []const struct { num_fingers: u16 },
+                  sensors: []const struct { sensor_type: sensor.Type, rate: f32 },
+                  user_data: VirtualJoystickUserData(UserData),
+
+                  /// Create a joystick.
+                  pub fn create() !ID {
+                      const desc = C.SDL_VirtualJoystickDesc{
+                          .Cleanup = virtualJoystickCleanup,
+                          .Rumble = virtualJoystickRumble,
+                          .RumbleTriggers = virtualJoystickRumbleTriggers,
+                      };
+                      const ret = C.SDL_AttachVirtualJoystick(&desc);
+                      if (ret == 0)
+                          return error.SdlError;
+                      return .{ .value = ret };
+                  }
+              };
+          }
     Typedefs: []
     Tests: []
   - Name: loadso
@@ -4142,20 +5027,20 @@ Subsystems:
                 Type: SDL_Sensor
                 Value: null
                 Mode: null
+          - SdlName: SDL_UpdateSensors
+            ZigName: update
+            Comment: "Update the current state of the open sensors."
+            Return:
+              Sdl: void
+              Zig: void
+              Convert: null
+              Checks: []
+            Arguments: []
         CustomFunctions: []
     Flags: []
     StringMap: []
     Structs: []
-    Functions:
-      - SdlName: SDL_UpdateSensors
-        ZigName: update
-        Comment: "Update the current state of the open sensors."
-        Return:
-          Sdl: void
-          Zig: void
-          Convert: null
-          Checks: []
-        Arguments: []
+    Functions: []
     CustomFunctions: []
     Typedefs: []
     Tests: []

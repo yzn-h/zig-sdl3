@@ -187,12 +187,12 @@ pub const Sensor = struct {
 		);
 		_ = ret;
 	}
-};
 
-/// Update the current state of the open sensors.
-pub fn update() void {
-	const ret = C.SDL_UpdateSensors();
-	_ = ret;
-}
+	/// Update the current state of the open sensors.
+	pub fn update() void {
+		const ret = C.SDL_UpdateSensors();
+		_ = ret;
+	}
+};
 
 const properties = @import("properties.zig");

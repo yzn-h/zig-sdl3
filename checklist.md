@@ -27,7 +27,8 @@ For monitoring how close various subsystems are to completion.
 
 ## In Progress
 * Hints
-* Surface
+* Joystick (Needs properties, virtual attach)
+* Surface (Needs properties)
 * Video
 
 ## Not Started
@@ -40,7 +41,6 @@ For monitoring how close various subsystems are to completion.
 * GPU
 * Haptic
 * HID
-* Joystick
 * Keyboard
 * Keycode
 * Main

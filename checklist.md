@@ -20,6 +20,7 @@ For monitoring how close various subsystems are to completion.
 * Power
 * Properties
 * Rect
+* Scan Code
 * Sensor
 * Time
 * Timer
@@ -48,7 +49,6 @@ For monitoring how close various subsystems are to completion.
 * Mouse
 * Open GL (All variants)
 * Render
-* Scan Code
 * Storage
 * System
 * Touch

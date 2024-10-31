@@ -738,25 +738,25 @@ pub const Joystick = struct {
 			return error.SdlError;
 		return .{ .state = ret, .percent = if (percent == -1) null else @intCast(percent) };
 	}
+
+	/// Locking for atomic access to the joystick API.
+	pub fn lockAll() void {
+		const ret = C.SDL_LockJoysticks();
+		_ = ret;
+	}
+
+	/// Unlocking for atomic access to the joystick API.
+	pub fn unlockAll() void {
+		const ret = C.SDL_UnlockJoysticks();
+		_ = ret;
+	}
+
+	/// Return whether a joystick is currently connected.
+	pub fn hasAnyConnected() bool {
+		const ret = C.SDL_HasJoystick();
+		return ret;
+	}
 };
-
-/// Locking for atomic access to the joystick API.
-pub fn lockJoysticks() void {
-	const ret = C.SDL_LockJoysticks();
-	_ = ret;
-}
-
-/// Unlocking for atomic access to the joystick API.
-pub fn unlockJoysticks() void {
-	const ret = C.SDL_UnlockJoysticks();
-	_ = ret;
-}
-
-/// Return whether a joystick is currently connected.
-pub fn hasJoystick() bool {
-	const ret = C.SDL_HasJoystick();
-	return ret;
-}
 
 /// Virtual joystick user data.
 pub fn VirtualJoystickUserData(comptime UserData: type) type {

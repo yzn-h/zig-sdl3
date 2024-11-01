@@ -50,6 +50,17 @@ pub const Priority = enum(c_uint) {
 	Default = C.SDL_HINT_DEFAULT,
 	Normal = C.SDL_HINT_NORMAL,
 	Override = C.SDL_HINT_OVERRIDE,
+
+	/// Set a hint with a specific priority. Will only set if the hint was previously set with a lower priority.
+	pub fn setWithPriority(
+		hint: Type,
+	) !void {
+		const ret = C.SDL_SetHintWithPriority(
+			hint.toSdl(),
+		);
+		if (!ret)
+			return error.SdlError;
+	}
 };
 
 /// Configuration hints for the library. May or may not be useful depending on the platform.

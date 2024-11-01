@@ -12,6 +12,7 @@ For monitoring how close various subsystems are to completion.
 * Blend Mode
 * Clipboard
 * GUID
+* Keycode
 * Loadso
 * Locale
 * Log
@@ -43,7 +44,6 @@ For monitoring how close various subsystems are to completion.
 * Haptic
 * HID
 * Keyboard
-* Keycode
 * Main
 * Metal
 * Mouse

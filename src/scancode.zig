@@ -42,7 +42,7 @@ pub const Scancode = struct {
 	pub const eight = Scancode{ .value = C.SDL_SCANCODE_8 };
 	pub const nine = Scancode{ .value = C.SDL_SCANCODE_9 };
 	pub const zero = Scancode{ .value = C.SDL_SCANCODE_0 };
-	pub const ret = Scancode{ .value = C.SDL_SCANCODE_RETURN };
+	pub const return_key = Scancode{ .value = C.SDL_SCANCODE_RETURN };
 	pub const escape = Scancode{ .value = C.SDL_SCANCODE_ESCAPE };
 	pub const backspace = Scancode{ .value = C.SDL_SCANCODE_BACKSPACE };
 	pub const tab = Scancode{ .value = C.SDL_SCANCODE_TAB };

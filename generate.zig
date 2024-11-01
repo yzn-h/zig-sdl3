@@ -74,6 +74,10 @@ const Flag = struct {
             value: bool,
         },
     },
+    functions: []const Function,
+    customFunctions: []const struct {
+        code: []const u8,
+    },
 };
 
 const StringMap = struct {
@@ -657,8 +661,15 @@ fn writeValue(
     try writer.writeAll("};");
 }
 
-fn writeFlag(allocator: std.mem.Allocator, writer: std.io.AnyWriter, flag: Flag, indent: usize) !void {
-    _ = allocator;
+fn writeFlag(
+    allocator: std.mem.Allocator,
+    writer: std.io.AnyWriter,
+    flag: Flag,
+    indent: usize,
+    sdl_types: std.StringHashMap(SdlData),
+    imports: *std.StringHashMap(void),
+    curr_subsystem: []const u8,)
+!void {
 
     //
     // /// <comment>
@@ -744,6 +755,16 @@ fn writeFlag(allocator: std.mem.Allocator, writer: std.io.AnyWriter, flag: Flag,
     try writer.writeAll("0;");
     try nextLine(writer, indent + 1);
     try writer.writeAll("}");
+
+    // <function>
+    for (flag.functions) |func| {
+        try writeFunction(allocator, writer, func, indent + 1, sdl_types, imports, curr_subsystem);
+    }
+    for (flag.customFunctions) |func| {
+        try nextLine(writer, 0);
+        try nextLine(writer, indent + 1);
+        try writer.writeAll(func.code);
+    }
 
     // };
     try nextLine(writer, indent);
@@ -1426,6 +1447,8 @@ pub fn main() !void {
             } else if (std.mem.eql(u8, exp.kind, "flag")) {
                 try sdl_types.put(exp.sdlName, SdlData{ .subsystem = file.name, .type_data = SdlTypeData{ .Flag = .{
                     .comment = "null",
+                    .customFunctions = &.{},
+                    .functions = &.{},
                     .name = exp.zigName,
                     .presets = &.{},
                     .type = exp.sdlName,
@@ -1507,7 +1530,7 @@ pub fn main() !void {
             item_cnt += 1;
         }
         for (subsystem.flags) |flag| {
-            try writeFlag(allocator, writer, flag, 0);
+            try writeFlag(allocator, writer, flag, 0, sdl_types, &imports, subsystem.name);
             if (item_cnt == 0) {
                 single_name = flag.name;
             }

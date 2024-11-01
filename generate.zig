@@ -668,8 +668,8 @@ fn writeFlag(
     indent: usize,
     sdl_types: std.StringHashMap(SdlData),
     imports: *std.StringHashMap(void),
-    curr_subsystem: []const u8,)
-!void {
+    curr_subsystem: []const u8,
+) !void {
 
     //
     // /// <comment>
@@ -833,8 +833,9 @@ fn writeMap(writer: std.io.AnyWriter, map: StringMap, indent: usize) !void {
     try writer.print("pub fn toSdl(self: {s}) [:0]const u8 {{", .{map.zigName});
 
     //  return switch (self) {
-    //	    .<zigName> => C.<sdlName>,
-    //	};
+    // .<zigName> => C.<sdlName>,
+    // };
+
     try nextLine(writer, indent + 2);
     try writer.writeAll("return switch (self) {");
     for (map.values) |val| {

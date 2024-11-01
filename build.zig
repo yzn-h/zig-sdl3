@@ -49,6 +49,7 @@ pub fn generateBindings(b: *std.Build, cfg: std.Build.TestOptions) *std.Build.St
 pub fn setupExample(b: *std.Build, sdl3: *std.Build.Module, cfg: std.Build.TestOptions, name: []const u8) !*std.Build.Step.Compile {
     const exe = b.addExecutable(.{
         .name = name,
+        .strip = true,
         .target = cfg.target orelse b.standardTargetOptions(.{}),
         .optimize = cfg.optimize,
         .root_source_file = b.path(try std.fmt.allocPrint(b.allocator, "examples/{s}.zig", .{name})),
